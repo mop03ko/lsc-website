@@ -424,11 +424,32 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2025 Light Steel Construction ХХК. Бүх эрх хуулиар хамгаалагдсан.</p>
+      <p>© 2026 Light Steel Construction ХХК. Бүх эрх хуулиар хамгаалагдсан.</p>
     </div>
   </div>
 </footer>
 
 <script src="main.js"></script>
+
+<!-- Facebook Customer Chat Plugin -->
+<div id="fb-root"></div>
+<div id="fb-customer-chat" class="fb-customerchat"></div>
+<script>
+  var chatbox = document.getElementById('fb-customer-chat');
+  chatbox.setAttribute("page_id", "100086498786259");
+  chatbox.setAttribute("attribution", "biz_inbox");
+</script>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({ xfbml: true, version: 'v18.0' });
+  };
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = 'https://connect.facebook.net/mn_MN/sdk/xfbml.customerchat.js';
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
 </body>
 </html>
