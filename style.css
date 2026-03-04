@@ -402,8 +402,7 @@ section { padding: 96px 0; }
   flex: 1;
   height: 2px;
   background: #ddd;
-  align-self: 42px;
-  margin-top: 42px;
+  margin-top: 6px;
 }
 .tl-dot {
   width: 14px;
