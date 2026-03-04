@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 990.45 237.07">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-2 {
+        fill: #e35d2f;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-4 {
+        letter-spacing: 0em;
+      }
+
+      .cls-5 {
+        letter-spacing: 0em;
+      }
+
+      .cls-6 {
+        letter-spacing: 0em;
+      }
+
+      .cls-7 {
+        letter-spacing: 0em;
+      }
+
+      .cls-8, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-9 {
+        font-family: Raleway-Heavy, Raleway;
+        font-size: 110.16px;
+        font-weight: 800;
+      }
+
+      .cls-10 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-11 {
+        font-family: Raleway-Regular, Raleway;
+        font-size: 86.58px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <text class="cls-8" transform="translate(286.11 109.94)"><tspan class="cls-9"><tspan x="0" y="0">LIGH</tspan><tspan class="cls-10" x="259.31" y="0">T</tspan><tspan x="324.85" y="0" xml:space="preserve"> STEE</tspan><tspan class="cls-1" x="617.87" y="0">L</tspan><tspan class="cls-5" x="679.55" y="0"> </tspan></tspan><tspan class="cls-11"><tspan class="cls-4" x="0" y="103.9">C</tspan><tspan x="58.7" y="103.9">ON</tspan><tspan class="cls-7" x="190.56" y="103.9">S</tspan><tspan x="243.03" y="103.9">TRU</tspan><tspan class="cls-6" x="417.74" y="103.9">C</tspan><tspan x="476.96" y="103.9">TION</tspan></tspan></text>
+    <rect class="cls-2" width="237.07" height="237.07"/>
+    <polygon class="cls-3" points="195.59 41.48 195.59 92.85 127.1 92.85 127.1 109.97 195.59 109.97 195.59 127.1 109.97 127.1 109.97 75.72 178.47 75.72 178.47 58.61 92.85 58.61 92.85 144.21 195.59 144.21 195.59 195.59 41.48 195.59 41.48 41.48 58.61 41.48 58.61 178.47 178.47 178.47 178.47 161.34 75.73 161.34 75.73 41.48 195.59 41.48"/>
+  </g>
+</svg>
