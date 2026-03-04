@@ -435,25 +435,11 @@
 
 <script src="main.js"></script>
 
-<!-- Facebook Customer Chat Plugin -->
-<div id="fb-root"></div>
-<div id="fb-customer-chat" class="fb-customerchat"></div>
-<script>
-  var chatbox = document.getElementById('fb-customer-chat');
-  chatbox.setAttribute("page_id", "100086498786259");
-  chatbox.setAttribute("attribution", "biz_inbox");
-</script>
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({ xfbml: true, version: 'v18.0' });
-  };
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-</script>
+<!-- Messenger Floating Button -->
+<a href="https://m.me/lightsteelco" target="_blank" rel="noopener" class="messenger-fab" aria-label="Messenger-ээр холбогдох">
+  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white">
+    <path d="M12 0C5.373 0 0 4.975 0 11.111c0 3.497 1.745 6.616 4.472 8.652V24l4.086-2.242c1.09.301 2.246.464 3.442.464 6.627 0 12-4.975 12-11.111S18.627 0 12 0zm1.193 14.963l-3.056-3.259-5.963 3.259 6.559-6.963 3.13 3.259 5.889-3.259-6.559 6.963z"/>
+  </svg>
+</a>
 </body>
 </html>

@@ -736,6 +736,23 @@ section { padding: 96px 0; }
   transition: background .2s, transform .2s;
 }
 .btn-facebook:hover { background: #1560cc; transform: translateY(-2px); }
+/* Messenger floating button */
+.messenger-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00c6ff, #0078ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,120,255,.45);
+  z-index: 9999;
+  transition: transform .2s, box-shadow .2s;
+}
+.messenger-fab:hover { transform: scale(1.1); box-shadow: 0 6px 22px rgba(0,120,255,.55); }
 .ci-item { display: flex; gap: 16px; align-items: flex-start; }
 .ci-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
 .ci-item strong { display: block; color: var(--white); font-size: 15px; margin-bottom: 2px; }
