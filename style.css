@@ -823,6 +823,17 @@ section { padding: 96px 0; }
   background: rgba(255,127,127,.1);
 }
 
+/* ── Phone hint ── */
+.form-hint {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  margin-top: 5px;
+}
+.form-hint-warn { color: #e8a020; }
+.form-hint-ok   { color: #7fda7f; }
+.form-hint-err  { color: #ff7f7f; }
+
 /* ═══ FOOTER ═══ */
 footer {
   background: #111;
