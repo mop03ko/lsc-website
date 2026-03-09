@@ -376,8 +376,7 @@
         </div>
       </div>
       <div class="contact-right reveal reveal-delay">
-        <form class="contact-form" id="contactForm" name="contact" data-netlify="true">
-          <input type="hidden" name="form-name" value="contact" />
+        <form class="contact-form" id="contactForm">
           <h3>Үнэ тооцоолуулах</h3>
           <div class="form-group">
             <label>Нэр</label>
@@ -404,9 +403,43 @@
             <label>Нэмэлт мэдээлэл</label>
             <textarea name="message" placeholder="Барилгын хэмжээ, давхар, онцлог..." rows="3"></textarea>
           </div>
-          <button type="submit" class="btn-primary btn-full">Илгээх</button>
-          <div class="form-success" id="formSuccess">✅ Таны мэдээлэл хүлээн авлаа. Удахгүй холбогдоно!</div>
+          <button type="submit" class="btn-primary btn-full" id="submitBtn">Илгээх</button>
+          <div class="form-success" id="formSuccess"></div>
         </form>
+        <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          var btn = document.getElementById('submitBtn');
+          var msg = document.getElementById('formSuccess');
+          btn.disabled = true;
+          btn.textContent = 'Илгээж байна...';
+          msg.style.display = 'none';
+          msg.className = 'form-success';
+          var data = new FormData(this);
+          fetch('send.php', { method: 'POST', body: data })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+              msg.style.display = 'block';
+              if (res.success) {
+                msg.textContent = '✅ ' + res.message;
+                msg.classList.add('form-success-ok');
+                document.getElementById('contactForm').reset();
+              } else {
+                msg.textContent = '❌ ' + res.message;
+                msg.classList.add('form-success-err');
+              }
+              btn.disabled = false;
+              btn.textContent = 'Илгээх';
+            })
+            .catch(function() {
+              msg.style.display = 'block';
+              msg.textContent = '❌ Холболт алдаа. Утсаар холбогдоно уу: +976 9908 0126';
+              msg.classList.add('form-success-err');
+              btn.disabled = false;
+              btn.textContent = 'Илгээх';
+            });
+        });
+        </script>
       </div>
     </div>
   </div>
