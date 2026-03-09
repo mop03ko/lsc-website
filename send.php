@@ -17,7 +17,7 @@ if (!$name || !$phone) {
     exit;
 }
 
-$to      = 'info@lsc.mn';
+$to      = 'info@lsc.mn, marketing@antmall.mn';
 $subject = 'Шинэ захиалга: ' . $name;
 
 $body  = "Шинэ захиалга ирлээ!\n\n";
