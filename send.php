@@ -18,20 +18,23 @@ if (!$name || !$phone) {
 }
 
 $to      = 'info@lsc.mn, marketing@antmall.mn';
-$subject = 'Шинэ захиалга: ' . $name;
+$subject = '=?UTF-8?B?' . base64_encode('Шинэ захиалга: ' . $name) . '?=';
 
-$body  = "Шинэ захиалга ирлээ!\n\n";
-$body .= "Нэр:           $name\n";
-$body .= "Утас:          $phone\n";
-$body .= "Барилгын төрөл: $type\n";
-$body .= "Нэмэлт мэдэ:   $message\n";
-$body .= "\n---\nlsc.mn вэбсайтаас ирсэн.";
+$body  = "Шинэ захиалга ирлээ!\r\n\r\n";
+$body .= "Нэр:            $name\r\n";
+$body .= "Утас:           $phone\r\n";
+$body .= "Барилгын төрөл: $type\r\n";
+$body .= "Нэмэлт мэдэ:   $message\r\n";
+$body .= "\r\n---\r\nlsc.mn вэбсайтаас ирсэн.";
 
-$headers  = "From: noreply@lsc.mn\r\n";
-$headers .= "Reply-To: $phone\r\n";
+$headers  = "MIME-Version: 1.0\r\n";
+$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+$headers .= "Content-Transfer-Encoding: base64\r\n";
+$headers .= "From: =?UTF-8?B?" . base64_encode('LSC Website <info@lsc.mn>') . "?=\r\n";
+$headers .= "Reply-To: $name <$phone>\r\n";
 $headers .= "X-Mailer: PHP/" . phpversion();
 
-$sent = mail($to, $subject, $body, $headers);
+$sent = mail($to, $subject, base64_encode($body), $headers);
 
 if ($sent) {
     echo json_encode(['success' => true, 'message' => 'Таны мэдээлэл хүлээн авлаа. Удахгүй холбогдоно!']);
