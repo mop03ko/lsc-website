@@ -62,7 +62,7 @@ window.addEventListener('scroll', () => {
   });
 });
 
-// ── Contact form (Netlify Forms) ──
+// ── Contact form → send.php ──
 const form = document.getElementById('contactForm');
 const formSuccess = document.getElementById('formSuccess');
 
@@ -70,25 +70,32 @@ if (form) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const btn = form.querySelector('button[type="submit"]');
-    btn.textContent = 'Илгээж байна...';
     btn.disabled = true;
+    btn.textContent = 'Илгээж байна...';
+    formSuccess.style.display = 'none';
+    formSuccess.className = 'form-success';
 
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(new FormData(form)).toString()
-    })
-      .then(() => {
+    fetch('send.php', { method: 'POST', body: new FormData(form) })
+      .then(r => r.json())
+      .then(res => {
         formSuccess.style.display = 'block';
-        form.reset();
-        btn.textContent = 'Илгээх';
+        if (res.success) {
+          formSuccess.textContent = '✅ ' + res.message;
+          formSuccess.classList.add('form-success-ok');
+          form.reset();
+        } else {
+          formSuccess.textContent = '❌ ' + res.message;
+          formSuccess.classList.add('form-success-err');
+        }
         btn.disabled = false;
-        setTimeout(() => { formSuccess.style.display = 'none'; }, 5000);
+        btn.textContent = 'Илгээх';
       })
       .catch(() => {
-        btn.textContent = 'Илгээх';
+        formSuccess.style.display = 'block';
+        formSuccess.textContent = '❌ Холболт алдаа. Утсаар холбогдоно уу: +976 9908 0126';
+        formSuccess.classList.add('form-success-err');
         btn.disabled = false;
-        alert('Алдаа гарлаа. Дахин оролдоно уу.');
+        btn.textContent = 'Илгээх';
       });
   });
 }
