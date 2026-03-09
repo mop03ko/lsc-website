@@ -384,7 +384,9 @@
           </div>
           <div class="form-group">
             <label>Утасны дугаар</label>
-            <input type="tel" name="phone" placeholder="9908 0126" required />
+            <input type="tel" name="phone" id="phoneInput" placeholder="99080126" required
+              inputmode="numeric" maxlength="8" autocomplete="tel" />
+            <small class="form-hint" id="phoneHint">8 оронтой тоо оруулна уу</small>
           </div>
           <div class="form-group">
             <label>Барилгын төрөл</label>
@@ -402,6 +404,10 @@
           <div class="form-group">
             <label>Нэмэлт мэдээлэл</label>
             <textarea name="message" placeholder="Барилгын хэмжээ, давхар, онцлог..." rows="3"></textarea>
+          </div>
+          <!-- Honeypot: spam bot илрүүлэх (хүн харахгүй) -->
+          <div style="display:none;position:absolute;left:-9999px" aria-hidden="true">
+            <input type="text" name="website" tabindex="-1" autocomplete="off" value="" />
           </div>
           <button type="submit" class="btn-primary btn-full" id="submitBtn">Илгээх</button>
           <div class="form-success" id="formSuccess"></div>
