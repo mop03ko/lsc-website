@@ -38,9 +38,9 @@ $headers .= "X-Mailer: PHP/" . phpversion();
 mail($to, $subject, base64_encode($body), $headers);
 
 // ── 2. Google Sheets руу хадгалах ───────────────────────────
-$sheet_url = 'https://script.google.com/macros/s/AKfycbwNjgKTSjVriGDjY1k8N5xkWI1UnDaZtLHr5GWnIF4VVylORlvDQYKhHwWsUwmxxIcc/exec';
+$sheet_url = 'https://script.google.com/macros/s/AKfycbxyR4FqmOvEftUY79ZGA2LiLjVlKIRNh6uv-TqSGBoQVGp3g-I6cnZyiWDDwVkUC35n/exec';
 
-$data = http_build_query([
+$sheet_url .= '?' . http_build_query([
     'name'    => $name,
     'phone'   => $phone,
     'type'    => $type,
@@ -49,9 +49,7 @@ $data = http_build_query([
 
 $ctx = stream_context_create([
     'http' => [
-        'method'  => 'POST',
-        'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-        'content' => $data,
+        'method'  => 'GET',
         'timeout' => 10,
         'follow_location' => 1,
     ]
