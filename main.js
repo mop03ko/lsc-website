@@ -2,6 +2,9 @@
 //   LIGHT STEEL CONSTRUCTION — main.js
 // ═══════════════════════════════════════
 
+// ── Form load time (spam timing check) ──
+const _formLoadTime = Date.now();
+
 // ── NAV scroll effect ──
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
@@ -62,6 +65,45 @@ window.addEventListener('scroll', () => {
   });
 });
 
+// ── Phone input: зөвхөн тоо, 8 орон ──
+const phoneInput = document.getElementById('phoneInput');
+const phoneHint  = document.getElementById('phoneHint');
+
+if (phoneInput) {
+  phoneInput.addEventListener('input', () => {
+    // Strip non-digits
+    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 8);
+    const len = phoneInput.value.length;
+    if (phoneHint) {
+      if (len === 0) {
+        phoneHint.textContent = '8 оронтой тоо оруулна уу';
+        phoneHint.className = 'form-hint';
+      } else if (len < 8) {
+        phoneHint.textContent = `${len}/8 орон оруулсан`;
+        phoneHint.className = 'form-hint form-hint-warn';
+      } else {
+        phoneHint.textContent = '✓ Зөв';
+        phoneHint.className = 'form-hint form-hint-ok';
+      }
+    }
+  });
+
+  phoneInput.addEventListener('blur', () => {
+    if (phoneInput.value.length > 0 && phoneInput.value.length < 8 && phoneHint) {
+      phoneHint.textContent = '❌ 8 оронтой байх ёстой';
+      phoneHint.className = 'form-hint form-hint-err';
+    }
+  });
+
+  phoneInput.addEventListener('focus', () => {
+    if (phoneHint && phoneHint.className.includes('form-hint-err')) {
+      const len = phoneInput.value.length;
+      phoneHint.textContent = `${len}/8 орон оруулсан`;
+      phoneHint.className = 'form-hint form-hint-warn';
+    }
+  });
+}
+
 // ── Contact form → send.php ──
 const form = document.getElementById('contactForm');
 const formSuccess = document.getElementById('formSuccess');
@@ -70,10 +112,39 @@ if (form) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const btn = form.querySelector('button[type="submit"]');
-    btn.disabled = true;
-    btn.textContent = 'Илгээж байна...';
     formSuccess.style.display = 'none';
     formSuccess.className = 'form-success';
+
+    // ── 1. Phone validation ──
+    const phoneVal = (form.querySelector('[name=phone]').value || '').replace(/\D/g, '');
+    if (phoneVal.length !== 8) {
+      formSuccess.style.display = 'block';
+      formSuccess.textContent = '❌ Утасны дугаар 8 оронтой байх ёстой.';
+      formSuccess.classList.add('form-success-err');
+      return;
+    }
+
+    // ── 2. Honeypot check ──
+    const hpField = form.querySelector('[name=website]');
+    if (hpField && hpField.value !== '') {
+      // Bot detected — silently succeed
+      formSuccess.style.display = 'block';
+      formSuccess.textContent = '✅ Таны мэдээлэл хүлээн авлаа. Удахгүй холбогдоно!';
+      formSuccess.classList.add('form-success-ok');
+      form.reset();
+      return;
+    }
+
+    // ── 3. Timing check (< 2 сек = bot) ──
+    if (Date.now() - _formLoadTime < 2000) {
+      formSuccess.style.display = 'block';
+      formSuccess.textContent = '❌ Хэт хурдан илгээгдлээ. Дахин оролдоно уу.';
+      formSuccess.classList.add('form-success-err');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Илгээж байна...';
 
     fetch('send.php', { method: 'POST', body: new FormData(form) })
       .then(r => r.json())
@@ -83,6 +154,10 @@ if (form) {
           formSuccess.textContent = '✅ ' + res.message;
           formSuccess.classList.add('form-success-ok');
           form.reset();
+          if (phoneHint) {
+            phoneHint.textContent = '8 оронтой тоо оруулна уу';
+            phoneHint.className = 'form-hint';
+          }
         } else {
           formSuccess.textContent = '❌ ' + res.message;
           formSuccess.classList.add('form-success-err');
