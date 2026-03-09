@@ -406,40 +406,6 @@
           <button type="submit" class="btn-primary btn-full" id="submitBtn">Илгээх</button>
           <div class="form-success" id="formSuccess"></div>
         </form>
-        <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-          e.preventDefault();
-          var btn = document.getElementById('submitBtn');
-          var msg = document.getElementById('formSuccess');
-          btn.disabled = true;
-          btn.textContent = 'Илгээж байна...';
-          msg.style.display = 'none';
-          msg.className = 'form-success';
-          var data = new FormData(this);
-          fetch('send.php', { method: 'POST', body: data })
-            .then(function(r) { return r.json(); })
-            .then(function(res) {
-              msg.style.display = 'block';
-              if (res.success) {
-                msg.textContent = '✅ ' + res.message;
-                msg.classList.add('form-success-ok');
-                document.getElementById('contactForm').reset();
-              } else {
-                msg.textContent = '❌ ' + res.message;
-                msg.classList.add('form-success-err');
-              }
-              btn.disabled = false;
-              btn.textContent = 'Илгээх';
-            })
-            .catch(function() {
-              msg.style.display = 'block';
-              msg.textContent = '❌ Холболт алдаа. Утсаар холбогдоно уу: +976 9908 0126';
-              msg.classList.add('form-success-err');
-              btn.disabled = false;
-              btn.textContent = 'Илгээх';
-            });
-        });
-        </script>
       </div>
     </div>
   </div>
