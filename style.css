@@ -811,10 +811,16 @@ section { padding: 96px 0; }
   margin-top: 14px;
   text-align: center;
   font-size: 14px;
-  color: #7fda7f;
   padding: 12px;
-  background: rgba(127,218,127,.1);
   border-radius: var(--radius);
+}
+.form-success-ok {
+  color: #7fda7f;
+  background: rgba(127,218,127,.1);
+}
+.form-success-err {
+  color: #ff7f7f;
+  background: rgba(255,127,127,.1);
 }
 
 /* ═══ FOOTER ═══ */
