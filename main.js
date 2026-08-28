@@ -104,6 +104,175 @@ if (phoneInput) {
   });
 }
 
+// ── Price Calculator ──
+// Үнийн тохиргоо — бодит үнэ, нөхцөлөө энд шинэчилнэ
+const CALC_CONFIG = {
+  rates: {
+    '89': 180000,   // 89мм стандарт профиль (₮/м²)
+    '140': 220000   // 140мм хүчитгэсэн профиль (₮/м²)
+  },
+  extras: {
+    screw: 3000,     // Шуруп, бэхэлгээ (₮/м²)
+    design: 20000,    // Зураг төсөл (₮/м²)
+    assembly: 45000  // Угсралтын ажлын хөлс (₮/м²)
+  },
+  payment: {
+    barterCashPercent: 60, // Бартерын мөнгөөр төлөх хувь
+    loan: {
+      monthlyRate: 2.5,    // Сарын хүү % (тэнцүү/аннуитет төлөлтөөр)
+      feePercent: 1,       // Зээл олголтын шимтгэл %
+      borrowers: [
+        { name: 'Иргэн', maxAmount: 50000000, feeCap: Infinity },
+        { name: 'Аж ахуйн нэгж', maxAmount: 300000000, feeCap: 1500000 }
+      ]
+    }
+  }
+};
+
+const calcSlider = document.getElementById('calcSlider');
+const calcAreaInput = document.getElementById('calcAreaInput');
+
+if (calcSlider && calcAreaInput) {
+  const format = n => '₮' + Math.round(n).toLocaleString('en-US');
+  const $ = id => document.getElementById(id);
+
+  let currentType = '89';
+  let payMethod = 'cash';   // cash | loan | barter
+  let loanIndex = 0;
+  let loanTerm = 12;
+  let currentTotal = 0;
+
+  const downPct = CALC_CONFIG.payment.barterCashPercent;
+  const loanPct = 100 - downPct;
+
+  // Бартерын хувийн тоог HTML дээрх бүх газарт тавих
+  document.querySelectorAll('[data-pct="down"]').forEach(el => el.textContent = downPct);
+  document.querySelectorAll('[data-pct="loan"]').forEach(el => el.textContent = loanPct);
+
+  const updatePayments = () => {
+    // Бэлэн
+    $('cashTotal').textContent = format(currentTotal);
+
+    // Зээл — тэнцүү (аннуитет) төлөлт
+    const cfg = CALC_CONFIG.payment.loan;
+    const borrower = cfg.borrowers[loanIndex];
+    const loanAmt = Math.min(currentTotal, borrower.maxAmount);
+    const loanDown = currentTotal - loanAmt;
+    const r = cfg.monthlyRate / 100;
+    const monthly = loanAmt * r / (1 - Math.pow(1 + r, -loanTerm));
+    const fee = Math.min(loanAmt * cfg.feePercent / 100, borrower.feeCap);
+    const totalPay = monthly * loanTerm + fee + loanDown;
+
+    $('loanMonthly').textContent = format(monthly);
+    $('loanMeta').textContent = `${cfg.monthlyRate}% сарын хүү · ${loanTerm} сар · тэнцүү төлөлт`;
+    $('loanDownRow').style.display = loanDown > 0 ? '' : 'none';
+    $('loanDown').textContent = format(loanDown);
+    $('loanAmt').textContent = format(loanAmt);
+    $('loanFee').textContent = format(fee);
+    $('loanTotal').textContent = format(totalPay);
+
+    // Бартер
+    $('barterCash').textContent = format(currentTotal * downPct / 100);
+    $('barterGoods').textContent = format(currentTotal * loanPct / 100);
+  };
+
+  const update = () => {
+    const area = Math.min(400, Math.max(10, parseInt(calcAreaInput.value, 10) || 10));
+    const rate = CALC_CONFIG.rates[currentType];
+    const frame = area * rate;
+    const screw = area * CALC_CONFIG.extras.screw;
+    const design = area * CALC_CONFIG.extras.design;
+    const assembly = area * CALC_CONFIG.extras.assembly;
+    currentTotal = frame + screw + design + assembly;
+
+    $('calcUnitPrice').textContent = format(rate);
+    $('calcFrame').textContent = format(frame);
+    $('calcScrew').textContent = format(screw);
+    $('calcDesign').textContent = format(design);
+    $('calcAssembly').textContent = format(assembly);
+    $('calcTotal').textContent = format(currentTotal);
+
+    updatePayments();
+  };
+
+  calcSlider.addEventListener('input', () => {
+    calcAreaInput.value = calcSlider.value;
+    update();
+  });
+  calcAreaInput.addEventListener('input', () => {
+    const v = parseInt(calcAreaInput.value, 10);
+    if (!isNaN(v)) calcSlider.value = Math.min(400, Math.max(10, v));
+    update();
+  });
+  calcAreaInput.addEventListener('blur', () => {
+    calcAreaInput.value = Math.min(400, Math.max(10, parseInt(calcAreaInput.value, 10) || 10));
+    update();
+  });
+
+  document.querySelectorAll('.calc-type').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.calc-type').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentType = btn.dataset.type;
+      update();
+    });
+  });
+
+  // Төлбөрийн хэлбэр сонгох
+  const panels = { cash: $('payCash'), loan: $('payLoan'), barter: $('payBarter') };
+  document.querySelectorAll('.pay-method').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pay-method').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      payMethod = btn.dataset.pay;
+      Object.entries(panels).forEach(([key, panel]) => {
+        panel.classList.toggle('active', key === payMethod);
+      });
+      updatePayments();
+    });
+  });
+
+  // Зээлдэгчийн төрөл сонгох
+  document.querySelectorAll('.loan-type').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.loan-type').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loanIndex = parseInt(btn.dataset.loan, 10);
+      updatePayments();
+    });
+  });
+
+  // Хугацаа сонгох
+  document.querySelectorAll('.term-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.term-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loanTerm = parseInt(btn.dataset.term, 10);
+      updatePayments();
+    });
+  });
+
+  // CTA дархад тооцооллыг холбоо барих формд автоматаар бөглөнө
+  const calcCta = $('calcCta');
+  if (calcCta) {
+    calcCta.addEventListener('click', () => {
+      const msg = document.querySelector('#contactForm textarea[name="message"]');
+      if (!msg) return;
+      const area = calcAreaInput.value;
+      let payText = 'Бэлэн төлөх';
+      if (payMethod === 'loan') {
+        const borrower = CALC_CONFIG.payment.loan.borrowers[loanIndex];
+        payText = `Зээл — ${borrower.name}, ${loanTerm} сар, сарын төлөлт ${$('loanMonthly').textContent}`;
+      } else if (payMethod === 'barter') {
+        payText = `Бартер — ${downPct}% мөнгө (${$('barterCash').textContent}) + ${loanPct}% бараа/үйлчилгээ (${$('barterGoods').textContent})`;
+      }
+      msg.value = `Тооцоолуур: ${currentType}мм профиль, ${area} м², нийт үнэ ${$('calcTotal').textContent}. Төлбөрийн хэлбэр: ${payText}. Дэлгэрэнгүй үнийн санал авахыг хүсэж байна.`;
+    });
+  }
+
+  update();
+}
+
 // ── Contact form → send.php ──
 const form = document.getElementById('contactForm');
 const formSuccess = document.getElementById('formSuccess');

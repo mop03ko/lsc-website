@@ -21,6 +21,7 @@
       <li><a href="#about">Бидний тухай</a></li>
       <li><a href="#products">Бүтээгдэхүүн</a></li>
       <li><a href="#advantages">Давуу тал</a></li>
+      <li><a href="#calculator">Үнэ тооцоолох</a></li>
       <li><a href="#applications">Хэрэглээ</a></li>
       <li><a href="#contact" class="nav-cta">Холбоо барих</a></li>
     </ul>
@@ -36,6 +37,7 @@
     <li><a href="#about" class="mm-link">Бидний тухай</a></li>
     <li><a href="#products" class="mm-link">Бүтээгдэхүүн</a></li>
     <li><a href="#advantages" class="mm-link">Давуу тал</a></li>
+    <li><a href="#calculator" class="mm-link">Үнэ тооцоолох</a></li>
     <li><a href="#applications" class="mm-link">Хэрэглээ</a></li>
     <li><a href="#contact" class="mm-link">Холбоо барих</a></li>
   </ul>
@@ -62,7 +64,7 @@
       <div class="stat"><span class="stat-num">20т</span><span class="stat-lbl">Өдрийн хүчин чадал</span></div>
     </div>
     <div class="hero-actions">
-      <a href="#contact" class="btn-primary">Үнэ тооцоолуулах</a>
+      <a href="#calculator" class="btn-primary">Үнэ тооцоолуулах</a>
       <a href="#products" class="btn-outline">Бүтээгдэхүүн үзэх</a>
     </div>
   </div>
@@ -257,6 +259,149 @@
   </div>
 </section>
 
+<!-- ═══ CALCULATOR ═══ -->
+<section id="calculator">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Үнэ тооцоолох</div>
+      <h2 class="section-title">Карказны <em>тооцоолуур</em></h2>
+      <p class="section-desc on-light">Барих гэж буй барилгынхаа талбайг (м²) оруулах буюу гүйлгүүрээр сонгоход төсөв шууд тооцоологдоно.</p>
+    </div>
+    <div class="calc-card reveal">
+      <div class="calc-left">
+        <div class="calc-label">Профилийн төрөл</div>
+        <div class="calc-types">
+          <button type="button" class="calc-type active" data-type="89">
+            <span class="ct-size">89мм</span>
+            <span class="ct-name">Стандарт</span>
+          </button>
+          <button type="button" class="calc-type" data-type="140">
+            <span class="ct-size">140мм</span>
+            <span class="ct-name">Хүчитгэсэн</span>
+          </button>
+        </div>
+        <div class="calc-label">Барилгын талбай</div>
+        <div class="calc-area">
+          <input type="number" id="calcAreaInput" min="10" max="400" value="80" inputmode="numeric" />
+          <span class="calc-area-unit">м²</span>
+        </div>
+        <input type="range" id="calcSlider" min="10" max="400" step="5" value="80" aria-label="Талбай сонгох" />
+        <div class="calc-range-labels"><span>10 м²</span><span>400 м²</span></div>
+        <div class="calc-unit">1 м² ≈ <strong id="calcUnitPrice">₮180,000</strong></div>
+      </div>
+      <div class="calc-right">
+        <div class="calc-row calc-main">
+          <span>Карказны төмрийн үнэ</span>
+          <strong id="calcFrame">₮14,400,000</strong>
+        </div>
+        <div class="calc-row"><span>Шуруп, бэхэлгээ</span><span id="calcScrew">₮240,000</span></div>
+        <div class="calc-row"><span>Зураг төсөл</span><span id="calcDesign">₮480,000</span></div>
+        <div class="calc-row"><span>Угсралтын ажлын хөлс</span><span id="calcAssembly">₮3,600,000</span></div>
+        <div class="calc-total">
+          <span>Нийт үнэ</span>
+          <strong id="calcTotal">₮18,720,000</strong>
+        </div>
+        <p class="calc-note">* Тооцоолол баримжаа бөгөөд эцсийн үнэ зураг төсөл, тээвэрлэлт зэргээс хамаарч өөрчлөгдөж болно.</p>
+        <a href="#contact" class="btn-primary btn-full" id="calcCta">Дэлгэрэнгүй үнийн санал авах</a>
+      </div>
+    </div>
+
+    <!-- Payment options -->
+    <div class="calc-pay reveal">
+      <div class="calc-label">Төлбөрийн хэлбэрээ сонгоно уу</div>
+      <div class="pay-methods">
+        <button type="button" class="pay-method active" data-pay="cash">
+          <span class="pm-idx">01 / 03</span>
+          <span class="pm-name">Бэлэн төлөх</span>
+          <span class="pm-desc">Нийт үнийн 100%-ийг бэлнээр төлөх</span>
+        </button>
+        <button type="button" class="pay-method" data-pay="loan">
+          <span class="pm-idx">02 / 03</span>
+          <span class="pm-name">Зээл</span>
+          <span class="pm-desc">Сарын 2.5% хүүтэй, 60 хүртэлх сарын хугацаатай барьцаат зээл</span>
+        </button>
+        <button type="button" class="pay-method" data-pay="barter">
+          <span class="pm-idx">03 / 03</span>
+          <span class="pm-name">Бартер</span>
+          <span class="pm-desc"><span data-pct="down">60</span>% мөнгө + <span data-pct="loan">40</span>% бараа, үйлчилгээгээр солилцох</span>
+        </button>
+      </div>
+
+      <!-- Cash panel -->
+      <div class="pay-panel active" id="payCash">
+        <div class="pp-cash">
+          <span class="pp-label">Бэлнээр төлөх нийт дүн</span>
+          <strong class="pp-big" id="cashTotal">₮18,720,000</strong>
+          <p class="pp-note">Нэг удаагийн төлбөрөөр — нэмэлт шимтгэл, хүүгүй.</p>
+        </div>
+      </div>
+
+      <!-- Loan panel -->
+      <div class="pay-panel" id="payLoan">
+        <div class="pp-loan-grid">
+          <div class="pp-loan-left">
+            <div class="calc-label">Зээлдэгчийн төрөл</div>
+            <div class="loan-types">
+              <button type="button" class="loan-type active" data-loan="0">
+                <span class="lt-body">
+                  <span class="lt-name">Иргэн</span>
+                  <span class="lt-desc">Зээлийн дээд хэмжээ ₮50 сая · олголтын шимтгэл 1%</span>
+                </span>
+                <span class="lt-rate">2.5% сарын хүү</span>
+              </button>
+              <button type="button" class="loan-type" data-loan="1">
+                <span class="lt-body">
+                  <span class="lt-name">Аж ахуйн нэгж</span>
+                  <span class="lt-desc">Зээлийн дээд хэмжээ ₮300 сая · шимтгэл 1% (дээд тал нь ₮1.5 сая)</span>
+                </span>
+                <span class="lt-rate">2.5% сарын хүү</span>
+              </button>
+            </div>
+            <div class="calc-label">Хугацаа сонгох</div>
+            <div class="term-chips">
+              <button type="button" class="term-chip active" data-term="12">12 сар</button>
+              <button type="button" class="term-chip" data-term="24">24 сар</button>
+              <button type="button" class="term-chip" data-term="36">36 сар</button>
+              <button type="button" class="term-chip" data-term="48">48 сар</button>
+              <button type="button" class="term-chip" data-term="60">60 сар</button>
+            </div>
+            <p class="pp-note">Барьцаа: үл хөдлөх хөрөнгө, өмчлөх/эзэмших эрхтэй газар, автомашин, тоног төхөөрөмж (үнэлгээний 60%-д тооцно).</p>
+          </div>
+          <div class="pp-loan-right">
+            <span class="pp-label">Сарын төлөлт</span>
+            <strong class="pp-big" id="loanMonthly">₮974,871</strong>
+            <span class="pp-sub" id="loanMeta">2.5% сарын хүү · 12 сар · тэнцүү төлөлт</span>
+            <div class="loan-split">
+              <div class="ls-row" id="loanDownRow"><span>Урьдчилгаа (дээд хэмжээнээс давсан хэсэг)</span><strong id="loanDown">₮0</strong></div>
+              <div class="ls-row"><span>Зээлийн дүн</span><strong id="loanAmt">₮0</strong></div>
+              <div class="ls-row"><span>Зээл олголтын шимтгэл (1%)</span><strong id="loanFee">₮0</strong></div>
+              <div class="ls-row"><span>Нийт төлөх дүн</span><strong id="loanTotal">₮0</strong></div>
+            </div>
+            <p class="pp-note">* Тэнцүү төлөлтөөр (аннуитет) тооцов. Зээлийн түүх, орлогын баталгаа шаардлагатай бөгөөд эцсийн нөхцөл гэрээгээр тодорхойлогдоно.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barter panel -->
+      <div class="pay-panel" id="payBarter">
+        <div class="pp-barter-grid">
+          <div class="barter-box">
+            <span class="pp-label">Мөнгөөр төлөх · <span data-pct="down">60</span>%</span>
+            <strong class="pp-big" id="barterCash">₮11,232,000</strong>
+            <span class="pp-sub">Бэлнээр эсвэл зээлээр</span>
+          </div>
+          <div class="barter-box barter-box-alt">
+            <span class="pp-label">Бартераар · <span data-pct="loan">40</span>%</span>
+            <strong class="pp-big" id="barterGoods">₮7,488,000</strong>
+            <span class="pp-sub">Таны санал болгох бараа, үйлчилгээгээр</span>
+          </div>
+        </div>
+        <p class="pp-note">Солилцох бараа, үйлчилгээнийхээ мэдээллийг «Холбоо барих» хэсгээр илгээгээрэй — бид хянаад тантай эргэн холбогдоно.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ APPLICATIONS ═══ -->
 <section id="applications" class="dark-section">
   <div class="container">
@@ -429,6 +574,7 @@
         <a href="#about">Бидний тухай</a>
         <a href="#products">Бүтээгдэхүүн</a>
         <a href="#advantages">Давуу тал</a>
+        <a href="#calculator">Үнэ тооцоолох</a>
         <a href="#applications">Хэрэглээ</a>
         <a href="#contact">Холбоо барих</a>
       </div>
