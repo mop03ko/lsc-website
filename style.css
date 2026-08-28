@@ -72,6 +72,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 32px;
 }
 .nav-logo img {
   height: 36px;
@@ -1282,8 +1283,12 @@ footer {
 
 /* ═══ RESPONSIVE ═══ */
 /* Цэсний зүйл олширсон тул дунд өргөнд burger цэс рүү эрт шилжинэ */
-@media (max-width: 1200px) {
+@media (max-width: 1360px) {
   .nav-links { gap: 20px; }
+}
+@media (max-width: 1200px) {
+  .nav-links { gap: 16px; }
+  .nav-links a { font-size: 14px; }
 }
 @media (max-width: 1120px) {
   .nav-links { display: none; }
