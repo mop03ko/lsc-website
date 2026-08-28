@@ -102,6 +102,23 @@ ul { list-style: none; }
 }
 .nav-cta:hover { background: var(--orange-light) !important; }
 
+/* Хэл солих товч */
+.lang-toggle {
+  background: none;
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: rgba(255,255,255,.85);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.lang-toggle:hover { border-color: var(--orange); color: var(--orange-light); }
+.mm-lang { border-bottom: none !important; padding: 14px 0; }
+
 .burger {
   display: none;
   flex-direction: column;

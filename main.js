@@ -5,6 +5,9 @@
 // ── Form load time (spam timing check) ──
 const _formLoadTime = Date.now();
 
+// ── i18n helper: динамик текстийг идэвхтэй хэлээр буцаана ──
+const t = (mn, en) => (window.LSC_LANG === 'en' ? en : mn);
+
 // ── NAV scroll effect ──
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
@@ -76,13 +79,13 @@ if (phoneInput) {
     const len = phoneInput.value.length;
     if (phoneHint) {
       if (len === 0) {
-        phoneHint.textContent = '8 оронтой тоо оруулна уу';
+        phoneHint.textContent = t('8 оронтой тоо оруулна уу', 'Enter an 8-digit number');
         phoneHint.className = 'form-hint';
       } else if (len < 8) {
-        phoneHint.textContent = `${len}/8 орон оруулсан`;
+        phoneHint.textContent = t(`${len}/8 орон оруулсан`, `${len}/8 digits entered`);
         phoneHint.className = 'form-hint form-hint-warn';
       } else {
-        phoneHint.textContent = '✓ Зөв';
+        phoneHint.textContent = t('✓ Зөв', '✓ Valid');
         phoneHint.className = 'form-hint form-hint-ok';
       }
     }
@@ -90,7 +93,7 @@ if (phoneInput) {
 
   phoneInput.addEventListener('blur', () => {
     if (phoneInput.value.length > 0 && phoneInput.value.length < 8 && phoneHint) {
-      phoneHint.textContent = '❌ 8 оронтой байх ёстой';
+      phoneHint.textContent = t('❌ 8 оронтой байх ёстой', '❌ Must be 8 digits');
       phoneHint.className = 'form-hint form-hint-err';
     }
   });
@@ -98,7 +101,7 @@ if (phoneInput) {
   phoneInput.addEventListener('focus', () => {
     if (phoneHint && phoneHint.className.includes('form-hint-err')) {
       const len = phoneInput.value.length;
-      phoneHint.textContent = `${len}/8 орон оруулсан`;
+      phoneHint.textContent = t(`${len}/8 орон оруулсан`, `${len}/8 digits entered`);
       phoneHint.className = 'form-hint form-hint-warn';
     }
   });
@@ -108,12 +111,12 @@ if (phoneInput) {
 // Үнийн тохиргоо — бодит үнэ, нөхцөлөө энд шинэчилнэ
 const CALC_CONFIG = {
   rates: {
-    '89': 180000,   // 89мм стандарт профиль (₮/м²)
+    '89': 220000,   // 89мм стандарт профиль (₮/м²)
     '140': 220000   // 140мм хүчитгэсэн профиль (₮/м²)
   },
   extras: {
     screw: 3000,     // Шуруп, бэхэлгээ (₮/м²)
-    design: 20000,    // Зураг төсөл (₮/м²)
+    design: 5000,    // Зураг төсөл (₮/м²)
     assembly: 45000  // Угсралтын ажлын хөлс (₮/м²)
   },
   payment: {
@@ -164,7 +167,10 @@ if (calcSlider && calcAreaInput) {
     const totalPay = monthly * loanTerm + fee + loanDown;
 
     $('loanMonthly').textContent = format(monthly);
-    $('loanMeta').textContent = `${cfg.monthlyRate}% сарын хүү · ${loanTerm} сар · тэнцүү төлөлт`;
+    $('loanMeta').textContent = t(
+      `${cfg.monthlyRate}% сарын хүү · ${loanTerm} сар · тэнцүү төлөлт`,
+      `${cfg.monthlyRate}% monthly interest · ${loanTerm} mo · annuity`
+    );
     $('loanDownRow').style.display = loanDown > 0 ? '' : 'none';
     $('loanDown').textContent = format(loanDown);
     $('loanAmt').textContent = format(loanAmt);
@@ -270,6 +276,13 @@ if (calcSlider && calcAreaInput) {
     });
   }
 
+  // Хэл солигдоход бартерын хувь болон динамик текстүүдийг сэргээнэ
+  document.addEventListener('lsc:lang', () => {
+    document.querySelectorAll('[data-pct="down"]').forEach(el => el.textContent = downPct);
+    document.querySelectorAll('[data-pct="loan"]').forEach(el => el.textContent = loanPct);
+    update();
+  });
+
   update();
 }
 
@@ -288,7 +301,7 @@ if (form) {
     const phoneVal = (form.querySelector('[name=phone]').value || '').replace(/\D/g, '');
     if (phoneVal.length !== 8) {
       formSuccess.style.display = 'block';
-      formSuccess.textContent = '❌ Утасны дугаар 8 оронтой байх ёстой.';
+      formSuccess.textContent = t('❌ Утасны дугаар 8 оронтой байх ёстой.', '❌ Phone number must be 8 digits.');
       formSuccess.classList.add('form-success-err');
       return;
     }
@@ -298,7 +311,7 @@ if (form) {
     if (hpField && hpField.value !== '') {
       // Bot detected — silently succeed
       formSuccess.style.display = 'block';
-      formSuccess.textContent = '✅ Таны мэдээлэл хүлээн авлаа. Удахгүй холбогдоно!';
+      formSuccess.textContent = t('✅ Таны мэдээлэл хүлээн авлаа. Удахгүй холбогдоно!', '✅ Your request has been received. We will contact you soon!');
       formSuccess.classList.add('form-success-ok');
       form.reset();
       return;
@@ -307,24 +320,24 @@ if (form) {
     // ── 3. Timing check (< 2 сек = bot) ──
     if (Date.now() - _formLoadTime < 2000) {
       formSuccess.style.display = 'block';
-      formSuccess.textContent = '❌ Хэт хурдан илгээгдлээ. Дахин оролдоно уу.';
+      formSuccess.textContent = t('❌ Хэт хурдан илгээгдлээ. Дахин оролдоно уу.', '❌ Submitted too quickly. Please try again.');
       formSuccess.classList.add('form-success-err');
       return;
     }
 
     btn.disabled = true;
-    btn.textContent = 'Илгээж байна...';
+    btn.textContent = t('Илгээж байна...', 'Sending...');
 
     fetch('send.php', { method: 'POST', body: new FormData(form) })
       .then(r => r.json())
       .then(res => {
         formSuccess.style.display = 'block';
         if (res.success) {
-          formSuccess.textContent = '✅ ' + res.message;
+          formSuccess.textContent = t('✅ ' + res.message, '✅ Your request has been received. We will contact you soon!');
           formSuccess.classList.add('form-success-ok');
           form.reset();
           if (phoneHint) {
-            phoneHint.textContent = '8 оронтой тоо оруулна уу';
+            phoneHint.textContent = t('8 оронтой тоо оруулна уу', 'Enter an 8-digit number');
             phoneHint.className = 'form-hint';
           }
         } else {
@@ -332,14 +345,14 @@ if (form) {
           formSuccess.classList.add('form-success-err');
         }
         btn.disabled = false;
-        btn.textContent = 'Илгээх';
+        btn.textContent = t('Илгээх', 'Send');
       })
       .catch(() => {
         formSuccess.style.display = 'block';
-        formSuccess.textContent = '❌ Холболт алдаа. Утсаар холбогдоно уу: +976 9908 0126';
+        formSuccess.textContent = t('❌ Холболт алдаа. Утсаар холбогдоно уу: +976 9908 0126', '❌ Connection error. Please call us: +976 9908 0126');
         formSuccess.classList.add('form-success-err');
         btn.disabled = false;
-        btn.textContent = 'Илгээх';
+        btn.textContent = t('Илгээх', 'Send');
       });
   });
 }

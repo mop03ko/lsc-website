@@ -24,6 +24,7 @@
       <li><a href="#calculator">Үнэ тооцоолох</a></li>
       <li><a href="#applications">Хэрэглээ</a></li>
       <li><a href="#contact" class="nav-cta">Холбоо барих</a></li>
+      <li><button type="button" class="lang-toggle" aria-label="Switch language">EN</button></li>
     </ul>
     <button class="burger" id="burger" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -40,6 +41,7 @@
     <li><a href="#calculator" class="mm-link">Үнэ тооцоолох</a></li>
     <li><a href="#applications" class="mm-link">Хэрэглээ</a></li>
     <li><a href="#contact" class="mm-link">Холбоо барих</a></li>
+    <li class="mm-lang"><button type="button" class="lang-toggle" aria-label="Switch language">EN</button></li>
   </ul>
 </div>
 
@@ -287,19 +289,19 @@
         </div>
         <input type="range" id="calcSlider" min="10" max="400" step="5" value="80" aria-label="Талбай сонгох" />
         <div class="calc-range-labels"><span>10 м²</span><span>400 м²</span></div>
-        <div class="calc-unit">1 м² ≈ <strong id="calcUnitPrice">₮180,000</strong></div>
+        <div class="calc-unit"><span>1 м² ≈</span> <strong id="calcUnitPrice">₮220,000</strong></div>
       </div>
       <div class="calc-right">
         <div class="calc-row calc-main">
           <span>Карказны төмрийн үнэ</span>
-          <strong id="calcFrame">₮14,400,000</strong>
+          <strong id="calcFrame">₮17,600,000</strong>
         </div>
         <div class="calc-row"><span>Шуруп, бэхэлгээ</span><span id="calcScrew">₮240,000</span></div>
-        <div class="calc-row"><span>Зураг төсөл</span><span id="calcDesign">₮480,000</span></div>
+        <div class="calc-row"><span>Зураг төсөл</span><span id="calcDesign">₮400,000</span></div>
         <div class="calc-row"><span>Угсралтын ажлын хөлс</span><span id="calcAssembly">₮3,600,000</span></div>
         <div class="calc-total">
           <span>Нийт үнэ</span>
-          <strong id="calcTotal">₮18,720,000</strong>
+          <strong id="calcTotal">₮21,840,000</strong>
         </div>
         <p class="calc-note">* Тооцоолол баримжаа бөгөөд эцсийн үнэ зураг төсөл, тээвэрлэлт зэргээс хамаарч өөрчлөгдөж болно.</p>
         <a href="#contact" class="btn-primary btn-full" id="calcCta">Дэлгэрэнгүй үнийн санал авах</a>
@@ -331,7 +333,7 @@
       <div class="pay-panel active" id="payCash">
         <div class="pp-cash">
           <span class="pp-label">Бэлнээр төлөх нийт дүн</span>
-          <strong class="pp-big" id="cashTotal">₮18,720,000</strong>
+          <strong class="pp-big" id="cashTotal">₮21,840,000</strong>
           <p class="pp-note">Нэг удаагийн төлбөрөөр — нэмэлт шимтгэл, хүүгүй.</p>
         </div>
       </div>
@@ -387,12 +389,12 @@
         <div class="pp-barter-grid">
           <div class="barter-box">
             <span class="pp-label">Мөнгөөр төлөх · <span data-pct="down">60</span>%</span>
-            <strong class="pp-big" id="barterCash">₮11,232,000</strong>
+            <strong class="pp-big" id="barterCash">₮13,104,000</strong>
             <span class="pp-sub">Бэлнээр эсвэл зээлээр</span>
           </div>
           <div class="barter-box barter-box-alt">
             <span class="pp-label">Бартераар · <span data-pct="loan">40</span>%</span>
-            <strong class="pp-big" id="barterGoods">₮7,488,000</strong>
+            <strong class="pp-big" id="barterGoods">₮8,736,000</strong>
             <span class="pp-sub">Таны санал болгох бараа, үйлчилгээгээр</span>
           </div>
         </div>
@@ -512,11 +514,11 @@
         <div class="contact-social-btns">
           <a href="https://www.facebook.com/lightsteelco" target="_blank" rel="noopener" class="btn-facebook">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.887v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-            Биднийг дагаарай
+            <span>Биднийг дагаарай</span>
           </a>
           <a href="viber://chat?number=%2B97699080126" class="btn-viber">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.985 0C8.89.013 3.39 1.16.484 7.193c-1.138 2.444-1.484 5.47-1.484 7.807 0 6.235 3.618 10.172 6.007 11.16.483.2.983.312 1.488.32.002 0 .005.001.008.001.484 0 .97-.1 1.42-.298.028-.012.055-.025.08-.04l.002-.001c2.56-1.395 5.93-2.084 7.995-2.084 6.627 0 12-5.373 12-12 0-6.624-5.37-11.997-11.995-11.998h-.02zm-5.57 6.258c.353-.013.71.12 1.004.41l.015.014c.64.603 1.219 1.262 1.713 1.982.38.558.26 1.265-.233 1.68l-.42.362c-.503.432-.444 1.145-.444 1.145s1.167 4.462 5.558 5.465c0 0 .712.06 1.148-.44l.362-.42c.41-.493 1.12-.614 1.68-.233.74.493 1.41 1.074 2.01 1.717.3.304.425.672.406 1.033-.02.361-.174.708-.461.962l-.017.015c-.72.64-1.6 1.05-2.55 1.175-.02.003-.04.005-.06.006-.157.014-.316.021-.475.021-4.71 0-12.01-7.127-12.51-11.57-.14-1.215.29-2.37 1.19-3.176l.015-.013c.252-.225.543-.347.869-.355zm10.15.542c.264 0 .478.214.478.478 0 .263-.214.477-.478.477-1.945 0-3.527 1.582-3.527 3.527 0 .264-.214.478-.478.478-.263 0-.477-.214-.477-.478 0-2.472 2.01-4.482 4.482-4.482zm-.075 1.877c.264 0 .478.214.478.477 0 .264-.214.478-.478.478-1.02 0-1.67.65-1.67 1.67 0 .263-.213.477-.477.477-.263 0-.477-.214-.477-.477 0-1.474 1.12-2.625 2.624-2.625zm.103-3.732c.264 0 .478.214.478.478 0 .263-.214.477-.478.477-2.954 0-5.357 2.403-5.357 5.357 0 .264-.214.478-.477.478-.264 0-.478-.214-.478-.478 0-3.48 2.832-6.312 6.312-6.312z"/></svg>
-            Холбогдох
+            <span>Холбогдох</span>
           </a>
         </div>
       </div>
@@ -590,6 +592,7 @@
 </footer>
 
 <script src="main.js"></script>
+<script src="i18n.js"></script>
 
 <!-- Messenger Floating Button -->
 <a href="https://m.me/lightsteelco" target="_blank" rel="noopener" class="messenger-fab" aria-label="Messenger-ээр холбогдох">
