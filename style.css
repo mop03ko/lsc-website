@@ -90,6 +90,7 @@ ul { list-style: none; }
   letter-spacing: 0.04em;
   color: rgba(255,255,255,0.85);
   text-transform: uppercase;
+  white-space: nowrap;
   transition: color 0.2s;
 }
 .nav-links a:hover { color: var(--orange-light); }
@@ -1280,6 +1281,15 @@ footer {
 }
 
 /* ═══ RESPONSIVE ═══ */
+/* Цэсний зүйл олширсон тул дунд өргөнд burger цэс рүү эрт шилжинэ */
+@media (max-width: 1200px) {
+  .nav-links { gap: 20px; }
+}
+@media (max-width: 1120px) {
+  .nav-links { display: none; }
+  .burger { display: flex; }
+}
+
 @media (max-width: 900px) {
   .nav-links { display: none; }
   .burger { display: flex; }
