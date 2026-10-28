@@ -1,0 +1,18 @@
+{
+  "name": "lsc-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check main.js && node --check i18n.js && node --check modules/calculator.js && node --check modules/form.js && node --check modules/navigation.js",
+    "verify": "npm run check && npm run build && npm test"
+  },
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.26.0",
+    "cheerio": "^1.1.2",
+    "esbuild": "^0.28.2",
+    "prettier": "^3.9.10",
+    "sharp": "^0.35.5"
+  }
+}
