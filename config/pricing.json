@@ -1,0 +1,18 @@
+{
+  "version": "2026-10-28",
+  "currency": "MNT",
+  "minArea": 10,
+  "maxArea": 400,
+  "step": 1,
+  "rates": { "89": 220000, "140": 220000 },
+  "extras": { "screw": 3000, "design": 5000, "assembly": 45000 },
+  "barterCashPercent": 60,
+  "loan": {
+    "monthlyRate": 2.5,
+    "feePercent": 1,
+    "borrowers": [
+      { "id": "person", "maxAmount": 50000000, "feeCap": null },
+      { "id": "business", "maxAmount": 300000000, "feeCap": 1500000 }
+    ]
+  }
+}

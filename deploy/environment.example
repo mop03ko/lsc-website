@@ -1,0 +1,13 @@
+# Set these in the PHP-FPM pool / service / Apache environment, never in a public file.
+LSC_ORIGIN=https://lsc.mn
+LSC_DATA_DIR=/srv/lsc-private
+LSC_IP_HASH_KEY=REPLACE_WITH_AT_LEAST_32_RANDOM_CHARACTERS
+LSC_SMTP_HOST=
+LSC_SMTP_PORT=587
+LSC_SMTP_TLS=tls
+LSC_SMTP_USER=
+LSC_SMTP_PASSWORD=
+LSC_MAIL_FROM=info@lsc.mn
+LSC_MAIL_TO=info@lsc.mn,marketing@antmall.mn
+LSC_SHEET_URL=
+LSC_SHEET_SECRET=

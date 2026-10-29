@@ -1,0 +1,33 @@
+name: Verify and package
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, curl
+          tools: composer:v2
+      - run: npm ci
+      - run: composer install --no-interaction --prefer-dist --no-dev
+      - run: npm run verify
+      - run: find server -name '*.php' -print0 | xargs -0 -n1 php -l
+      - run: php -l send.php && php -l events.php
+      - run: npm audit --audit-level=high
+      - run: composer audit
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lsc-apache-release
+          path: dist/
+          include-hidden-files: true
+          retention-days: 14

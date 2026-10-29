@@ -1,1 +1,9 @@
 deploy.ps1
+node_modules/
+vendor/
+dist/
+output/
+.playwright-cli/
+.env
+*.sqlite*
+*.log
