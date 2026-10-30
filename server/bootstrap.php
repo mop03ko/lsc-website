@@ -196,7 +196,12 @@ function enforce_request(int $maxBytes = 16384): void
     }
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     if (
-        ($origin !== '' && $origin !== env('LSC_ORIGIN', 'https://lsc.mn')) ||
+        ($origin !== '' &&
+            !in_array(
+                $origin,
+                array_map('trim', explode(',', env('LSC_ORIGIN', 'https://lsc.mn'))),
+                true,
+            )) ||
         ($_SERVER['HTTP_SEC_FETCH_SITE'] ?? '') === 'cross-site'
     ) {
         json_response(403, ['success' => false, 'code' => 'origin_denied']);

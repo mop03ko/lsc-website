@@ -30,6 +30,6 @@ test('installer creates private settings outside public_html and env() reads the
   assert.match(again, /Kept existing/);
   const probe = `require '${path.join(release, 'server', 'bootstrap.php')}'; echo env('LSC_ORIGIN'), '|', env('LSC_DATA_DIR'), '|', strlen(env('LSC_IP_HASH_KEY'));`;
   const res = execFileSync(php, ['-r', probe], { env, encoding: 'utf8' });
-  assert.equal(res, `https://lsc.mn|${path.join(home, 'lsc-private', 'data')}|64`);
+  assert.equal(res, `https://lsc.mn,https://www.lsc.mn,https://new.lsc.mn|${path.join(home, 'lsc-private', 'data')}|64`);
   fs.rmSync(home, { recursive: true, force: true });
 });

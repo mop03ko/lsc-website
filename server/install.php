@@ -22,7 +22,7 @@ foreach ([$dir, $data] as $d) {
 $file = $dir . '/env.php';
 if (!is_file($file)) {
     $values = [
-        'LSC_ORIGIN' => 'https://lsc.mn',
+        'LSC_ORIGIN' => 'https://lsc.mn,https://www.lsc.mn,https://new.lsc.mn',
         'LSC_DATA_DIR' => $data,
         'LSC_IP_HASH_KEY' => bin2hex(random_bytes(32)),
         'LSC_SMTP_HOST' => '',
