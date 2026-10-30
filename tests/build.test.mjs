@@ -44,3 +44,16 @@ test('public pages have valid internal links, metadata and optimized assets', as
     }
   }
 });
+test('3D models section ships its viewer, model file and calculator link', async () => {
+  for (const url of ['/', '/en/']) {
+    const $ = load(await fs.readFile(path.join('dist', url, 'index.html'), 'utf8'));
+    const viewer = $('#modelStage').attr('data-viewer');
+    assert.match(viewer, /^\/assets\/viewer3d\.[a-f0-9]{12}\.js$/);
+    await fs.access(path.join('dist', viewer));
+    assert.equal($('.model-card').length, 7);
+    assert.equal($('#modelToCalc').attr('href'), '#calculator');
+    assert.ok($('#calculator #calcAreaInput').length);
+  }
+  await fs.access('dist/models/barnhouse-1.glb');
+  await fs.access('dist/fonts/IBMPlexSans-400Regular.woff2');
+});

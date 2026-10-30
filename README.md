@@ -29,7 +29,9 @@ Use `LSC_ORIGIN=http://127.0.0.1:8086` for local preview. Do not run the notific
 ## Source organization
 
 - `index.html`: Mongolian source template. `content/translations.json` and explicit English strings in the build generate crawlable English pages at `/en/`.
-- `modules/`: calculator, validation, navigation, request submission and anonymous first-party event counts.
+- `modules/`: calculator, validation, navigation, request submission, anonymous first-party event counts, and the 3D model section (`models.js`; the three.js viewer `viewer3d.js` is built as a separate lazily loaded asset).
+- `models/`: web-ready GLB models (car and site props removed). `images/models/`: model thumbnails. `fonts/`: self-hosted IBM Plex (LSC 3.0).
+- Visual system: LSC 3.0 (limestone canvas, graphite ink, terracotta actions, IBM Plex Sans/Mono, 4/8/16 px radii).
 - `config/pricing.json`: shared pricing source, bundled for browsers and read independently by PHP. Client totals are never authoritative.
 - `scripts/build.mjs`: 10 static pages, responsive WebP assets, hashed JS/CSS, sitemap, social preview and favicon.
 - `send.php`: validation, atomic rate limit, idempotency, lead persistence and notification enqueue in one transaction.
