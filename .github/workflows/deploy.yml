@@ -68,6 +68,44 @@ jobs:
             echo "path=${BASE}new/" >> "$GITHUB_OUTPUT"
           fi
           echo "Uploading to: ${BASE}$( [ "$TARGET" = production ] && echo '' || echo new/ )"
+      - name: Back up the live site before replacing it (production only)
+        if: github.event.inputs.target == 'production'
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          PROTO: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          PORT: ${{ vars.FTP_PORT || 21 }}
+          DIR: ${{ steps.dir.outputs.path }}
+        run: |
+          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y lftp >/dev/null
+          ssl=true; [ "$PROTO" = ftp ] && ssl=false
+          cat > lftp.rc <<RC
+          set ftp:ssl-force $ssl
+          set ftp:ssl-protect-data $ssl
+          set net:max-retries 2
+          set net:timeout 30
+          RC
+          lftp -p "$PORT" -u "$FTP_USERNAME,$FTP_PASSWORD" -e "source lftp.rc; cls -1 $DIR; bye" "$FTP_SERVER" > top.txt
+          echo "Top level of $DIR:"; cat top.txt
+          if grep -Eq '^public_html/?$' top.txt && ! grep -Eq '^index\.(html|php)$' top.txt; then
+            echo "::error::$DIR looks like the account home, not the web root. Set repository variable FTP_BASE=public_html/"; exit 1
+          fi
+          lftp -p "$PORT" -u "$FTP_USERNAME,$FTP_PASSWORD" -e "source lftp.rc; mirror --parallel=4 -x '^new/' $DIR backup; bye" "$FTP_SERVER"
+          files=$(find backup -type f | wc -l); echo "Backed up $files files"
+          [ "$files" -gt 0 ] || { echo "::error::Backup is empty"; exit 1; }
+          # Encrypted with the FTP password: the repository is public, so the archive must not be readable.
+          tar czf - -C backup . | gpg --batch --yes --pinentry-mode loopback --symmetric --cipher-algo AES256 \
+            --passphrase-file <(printf %s "$FTP_PASSWORD") -o lsc-live-backup.tar.gz.gpg
+          rm -rf backup lftp.rc
+      - name: Keep the encrypted backup (30 days)
+        if: github.event.inputs.target == 'production'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lsc-live-backup-${{ github.run_id }}
+          path: lsc-live-backup.tar.gz.gpg
+          retention-days: 30
+          if-no-files-found: error
       - uses: actions/download-artifact@v4
         with:
           name: site

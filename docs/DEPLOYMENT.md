@@ -12,6 +12,7 @@ The local audit found live Apache, not Netlify. No production deployment is auto
 
 - **Staging (automatic):** every push to `main` or `lsc-3.0-redesign` uploads to `<FTP_BASE>new/`, e.g. `https://lsc.mn/new/`.
 - **Production (manual only):** Actions → *Deploy (FTP)* → *Run workflow* → `target=production`, `confirm=lsc.mn`. Do this only after the server environment below is in place and the current document root is backed up.
+- Production runs first download the live web root (except `new/`) and keep it as an encrypted 30-day artifact `lsc-live-backup-<run>` (AES-256, passphrase = the FTP password). Restore: `gpg -d lsc-live-backup.tar.gz.gpg | tar xz`. The run stops if the target folder looks like the account home instead of the web root.
 - Optional repository variables: `FTP_BASE` (default empty = the FTP account's home; use `public_html/` if the account starts above the web root), `FTP_PROTOCOL` (`ftps` default, `ftp` if the host has no TLS), `FTP_PORT` (21).
 - The action only uploads changed files and never removes files outside its own sync state; private lead data must live outside the web root (`LSC_DATA_DIR`).
 
