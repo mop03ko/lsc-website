@@ -76,23 +76,21 @@ jobs:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
           PROTO: ${{ vars.FTP_PROTOCOL || 'ftps' }}
           PORT: ${{ vars.FTP_PORT || 21 }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
           DIR: ${{ steps.dir.outputs.path }}
         run: |
-          sudo apt-get -qq update >/dev/null && sudo apt-get -qq install -y lftp >/dev/null
+          fail() { echo "::error::$1: $(tail -n 3 err.txt 2>/dev/null | tr '\n' ' ')"; exit 1; }
+          (sudo apt-get -qq update && sudo apt-get -qq install -y lftp) >/dev/null 2>err.txt || fail "lftp install"
           ssl=true; [ "$PROTO" = ftp ] && ssl=false
-          cat > lftp.rc <<RC
-          set ftp:ssl-force $ssl
-          set ftp:ssl-protect-data $ssl
-          set net:max-retries 2
-          set net:timeout 30
-          RC
-          lftp -p "$PORT" -u "$FTP_USERNAME,$FTP_PASSWORD" -e "source lftp.rc; cls -1 $DIR; bye" "$FTP_SERVER" > top.txt
-          echo "Top level of $DIR:"; cat top.txt
+          printf 'set ftp:ssl-force %s\nset ftp:ssl-protect-data %s\nset ssl:verify-certificate %s\nset net:max-retries 2\nset net:timeout 30\n' \
+            "$ssl" "$ssl" "${{ vars.FTP_VERIFY_CERT || 'yes' }}" > lftp.rc
+          lftp -p "$PORT" -u "$FTP_USERNAME" --env-password -e "source lftp.rc; cls -1 $DIR; bye" "$FTP_SERVER" > top.txt 2>err.txt || fail "FTP list"
+          echo "::notice::Top level of $DIR: $(tr '\n' ' ' < top.txt | cut -c1-900)"
           if grep -Eq '^public_html/?$' top.txt && ! grep -Eq '^index\.(html|php)$' top.txt; then
             echo "::error::$DIR looks like the account home, not the web root. Set repository variable FTP_BASE=public_html/"; exit 1
           fi
-          lftp -p "$PORT" -u "$FTP_USERNAME,$FTP_PASSWORD" -e "source lftp.rc; mirror --parallel=4 -x '^new/' $DIR backup; bye" "$FTP_SERVER"
-          files=$(find backup -type f | wc -l); echo "Backed up $files files"
+          lftp -p "$PORT" -u "$FTP_USERNAME" --env-password -e "source lftp.rc; mirror --parallel=4 -x '^new/' $DIR backup; bye" "$FTP_SERVER" >/dev/null 2>err.txt || fail "FTP backup download"
+          files=$(find backup -type f | wc -l); echo "::notice::Backed up $files files ($(du -sh backup | cut -f1))"
           [ "$files" -gt 0 ] || { echo "::error::Backup is empty"; exit 1; }
           # Encrypted with the FTP password: the repository is public, so the archive must not be readable.
           tar czf - -C backup . | gpg --batch --yes --pinentry-mode loopback --symmetric --cipher-algo AES256 \
