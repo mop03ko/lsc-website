@@ -54,6 +54,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.target == 'production' && 'production' || 'staging' }}
     steps:
+      - name: Check FTP server name
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        run: |
+          case "$FTP_SERVER" in *://*|*/*|*" "*|"") echo "::error::FTP_SERVER must be a bare host name like cp-1.webhost.mn (no ftp://, slashes or spaces)"; exit 1;; esac
+          for h in cp-1.webhost.mn cp1.webhost.mn; do echo "::notice::$h resolves to: $(getent hosts $h | awk '{print $1}' | tr '\n' ' ')"; done
+          getent hosts "$FTP_SERVER" >/dev/null || { echo "::error::FTP_SERVER (length ${#FTP_SERVER}) does not resolve in DNS"; exit 1; }
       - name: Choose target folder
         id: dir
         env:
