@@ -84,7 +84,7 @@ jobs:
           ssl=true; [ "$PROTO" = ftp ] && ssl=false
           printf 'set ftp:ssl-force %s\nset ftp:ssl-protect-data %s\nset ssl:verify-certificate %s\nset net:max-retries 2\nset net:timeout 30\n' \
             "$ssl" "$ssl" "${{ vars.FTP_VERIFY_CERT || 'yes' }}" > lftp.rc
-          lftp -p "$PORT" -u "$FTP_USERNAME" --env-password -e "source lftp.rc; cls -1 $DIR; bye" "$FTP_SERVER" > top.txt 2>err.txt || fail "FTP list"
+          lftp -p "$PORT" -u "$FTP_USERNAME" --env-password -e "source lftp.rc; cls -1 $DIR; bye" "$FTP_SERVER" > top.txt 2>err.txt || { names=$(echo | timeout 20 openssl s_client -starttls ftp -connect "$FTP_SERVER:$PORT" 2>/dev/null | openssl x509 -noout -subject -ext subjectAltName 2>/dev/null | tr '\n' ' '); echo "::warning::FTP certificate is issued for: $names"; fail "FTP list"; }
           echo "::notice::Top level of $DIR: $(tr '\n' ' ' < top.txt | cut -c1-900)"
           if grep -Eq '^public_html/?$' top.txt && ! grep -Eq '^index\.(html|php)$' top.txt; then
             echo "::error::$DIR looks like the account home, not the web root. Set repository variable FTP_BASE=public_html/"; exit 1
