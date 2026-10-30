@@ -15,6 +15,14 @@ The local audit found live Apache, not Netlify. No production deployment is auto
 - Optional repository variables: `FTP_BASE` (default empty = the FTP account's home; use `public_html/` if the account starts above the web root), `FTP_PROTOCOL` (`ftps` default, `ftp` if the host has no TLS), `FTP_PORT` (21).
 - The action only uploads changed files and never removes files outside its own sync state; private lead data must live outside the web root (`LSC_DATA_DIR`).
 
+## cPanel quick setup (shared hosting)
+
+1. cPanel → MultiPHP Manager: set lsc.mn to PHP 8.3+; confirm pdo_sqlite, mbstring, curl.
+2. After the first staging upload, open cPanel → Terminal and run `php ~/public_html/new/server/install.php` (or the production path). It creates `~/lsc-private/` (0700) with `data/` and `env.php` (0600, random `LSC_IP_HASH_KEY`) and prints the cron command. Without Terminal, add the same command once as a cron job and remove it afterwards.
+3. Edit `~/lsc-private/env.php` in File Manager: SMTP (cPanel mail account, usually `mail.lsc.mn`, 465/ssl), `LSC_MAIL_TO`, `LSC_SHEET_URL`, `LSC_SHEET_SECRET`. Server environment variables, if set, override this file.
+4. cPanel → Cron Jobs: every minute, `php ~/public_html/server/worker.php` (use the printed PHP path).
+5. Test on staging, then run the production workflow.
+
 ## Prepare before switching traffic
 
 1. Back up the current document root and existing form integration configuration. Record its release/commit. Do not overwrite the only recoverable copy.

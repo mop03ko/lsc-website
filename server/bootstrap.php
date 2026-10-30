@@ -1,8 +1,50 @@
 <?php
 declare(strict_types=1);
+/* Private folder for settings and lead data: the first parent of the release root that is
+ not a public web root (e.g. /home/USER/lsc-private for /home/USER/public_html[/new]). */
+function private_dir(): string
+{
+    $root = str_replace('\\', '/', (string) realpath(dirname(__DIR__)));
+    $dir = dirname($root);
+    while (
+        $dir !== dirname($dir) &&
+        preg_match('#/(public_html|www|htdocs|html)(/|$)#', $dir . '/')
+    ) {
+        $dir = dirname($dir);
+    }
+    return $dir . '/lsc-private';
+}
+/* Settings come from the server environment first, then from <private_dir>/env.php
+ (a PHP file returning an array), so cPanel hosting and the cron worker share one config. */
+function env_file(): array
+{
+    static $cfg;
+    if (is_array($cfg)) {
+        return $cfg;
+    }
+    $cfg = [];
+    $file = getenv('LSC_ENV_FILE') ?: private_dir() . '/env.php';
+    $real = realpath($file);
+    $root = str_replace('\\', '/', (string) realpath(dirname(__DIR__)));
+    if ($real && is_file($real) && !str_starts_with(str_replace('\\', '/', $real), $root . '/')) {
+        $values = require $real;
+        if (is_array($values)) {
+            foreach ($values as $k => $v) {
+                if (is_string($k) && is_scalar($v)) {
+                    $cfg[$k] = (string) $v;
+                }
+            }
+        }
+    }
+    return $cfg;
+}
 function env(string $key, string $default = ''): string
 {
-    return getenv($key) !== false ? (string) getenv($key) : $default;
+    $value = getenv($key);
+    if ($value !== false) {
+        return (string) $value;
+    }
+    return env_file()[$key] ?? $default;
 }
 function db(): PDO
 {
@@ -68,8 +110,7 @@ function calculate(array $q): array
     $b = $c['loan']['borrowers'][$borrower === 'business' ? 1 : 0];
     $amount = min($total, $b['maxAmount']);
     $r = $c['loan']['monthlyRate'] / 100;
-    $monthly =
-        $r == 0 ? $amount / (int) $term : ($amount * $r) / (1 - pow(1 + $r, -(int) $term));
+    $monthly = $r == 0 ? $amount / (int) $term : ($amount * $r) / (1 - pow(1 + $r, -(int) $term));
     $fee = min(($amount * $c['loan']['feePercent']) / 100, $b['feeCap'] ?? PHP_INT_MAX);
     return [
         'area' => (int) $area,
