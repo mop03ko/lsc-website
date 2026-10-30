@@ -6,6 +6,11 @@ export const MODELS = {
     name: ['Барнхаус', 'Barnhouse'],
     note: ['2 давхар · гараж', '2 storeys · garage'],
     file: '/models/barnhouse-1.glb',
+    plan: '/models/barnhouse-1.plan.json',
+    levels: {
+      ground: ['1-р давхар', 'Ground floor'],
+      upper: ['2-р давхар', 'Upper floor'],
+    },
     dims: '11.4 × 14.4 м · 9.5 м',
     floors: [
       [['1-р давхар (гараж орсон)', 'Ground floor (incl. garage)'], 128.7],
@@ -29,7 +34,150 @@ export function initModels() {
   const tt = (pair) => t(pair[0], pair[1]);
   let current = 'barnhouse',
     viewer = null,
-    loading = null;
+    loading = null,
+    mode = 'exterior',
+    profileMm = 89,
+    plans = new Map();
+  const detail = $('modelDetail');
+  const el = (tag, props = {}, ...kids) => {
+    const n = Object.assign(document.createElement(tag), props);
+    n.append(...kids);
+    return n;
+  };
+
+  function setPressed(sel, test) {
+    document.querySelectorAll(sel).forEach((b) => {
+      const on = test(b);
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+  }
+
+  function getPlan(m) {
+    if (!m.plan) return Promise.resolve(null);
+    if (!plans.has(m.plan))
+      plans.set(
+        m.plan,
+        fetch(m.plan)
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null),
+      );
+    return plans.get(m.plan);
+  }
+
+  function renderDetail(planData) {
+    const m = MODELS[current];
+    detail.replaceChildren();
+    const level = planData?.levels.find((l) => l.id === mode);
+    if (level) {
+      detail.append(
+        el('div', {
+          className: 'calc-label',
+          textContent: t('Өрөөний зохион байгуулалт', 'Room layout'),
+        }),
+        el('h4', {
+          textContent: tt(m.levels[level.id]) + t(' · өрөөнүүд', ' · rooms'),
+        }),
+      );
+      const list = el('ol', { className: 'model-rooms' });
+      level.rooms.forEach((r, i) => {
+        const b = el(
+          'button',
+          { type: 'button', className: 'model-room' },
+          el('span', { textContent: t(`Өрөө ${i + 1}`, `Room ${i + 1}`) }),
+          el('span', { className: 'mono', textContent: r.area.toFixed(1) + t(' м²', ' m²') }),
+        );
+        b.dataset.level = level.id;
+        b.dataset.index = String(i);
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', () => {
+          viewer?.selectRoom(level.id, i);
+          markRoom(level.id, i);
+        });
+        list.append(el('li', {}, b));
+      });
+      detail.append(
+        list,
+        el('p', {
+          className: 'model-help',
+          textContent: t(
+            'Хананы дотор талаар хэмжсэн ойролцоо цэвэр талбай. Өрөөний зориулалтыг зураг төслөөр тогтооно. Шат, хонгилын талбай тусад нь орно.',
+            'Approximate net areas measured inside the walls. Room use is set in the design stage. Stairs and halls are not included.',
+          ),
+        }),
+      );
+    } else if (mode === 'frame') {
+      const toggle = el('div', { className: 'model-profile', role: 'group' });
+      toggle.setAttribute('aria-label', t('Профилийн төрөл', 'Profile type'));
+      for (const mm of [89, 140]) {
+        const b = el('button', {
+          type: 'button',
+          className: 'model-view' + (mm === profileMm ? ' active' : ''),
+          textContent: mm + t('мм профиль', ' mm profile'),
+        });
+        b.dataset.profile = String(mm);
+        b.setAttribute('aria-pressed', String(mm === profileMm));
+        b.addEventListener('click', () => setProfile(mm, true));
+        toggle.append(b);
+      }
+      const layers = el('ul', { className: 'model-layers' });
+      [
+        [
+          t('Хана', 'Walls'),
+          t(`Хөнгөн ган профиль, ${profileMm} мм`, `Light steel studs, ${profileMm} mm`),
+        ],
+        [
+          t('Доод, дээд хөндлөвч', 'Top and bottom tracks'),
+          t('Тулгууруудыг холбоно', 'Tie the studs together'),
+        ],
+        [
+          t('Давхар хоорондын хучилт', 'Floor structure'),
+          t('2-р давхрын ган дам нуруу', 'Steel joists under the upper floor'),
+        ],
+        [
+          t('Дулаалга, өнгөлгөө', 'Insulation and finishes'),
+          t('Төслөөр сонгоно', 'Chosen per project'),
+        ],
+      ].forEach(([a, b]) =>
+        layers.append(
+          el('li', {}, el('strong', { textContent: a }), el('span', { textContent: b })),
+        ),
+      );
+      detail.append(
+        el('div', { className: 'calc-label', textContent: t('Хийцлэл', 'Construction') }),
+        el('h4', { textContent: t('Хөнгөн ган каркас', 'Light steel frame') }),
+        toggle,
+        layers,
+        el('p', {
+          className: 'model-help',
+          textContent: t(
+            'Бүдүүвч харагдац. Тулгуурын алхам, профилийн хэмжээ, ачааллыг инженерийн тооцоогоор тогтооно.',
+            'Schematic view. Stud spacing, profile size and loads are set by engineering calculation.',
+          ),
+        }),
+      );
+    }
+    detail.hidden = !detail.childElementCount;
+  }
+
+  function markRoom(levelId, i) {
+    setPressed('.model-room', (b) => b.dataset.level === levelId && b.dataset.index === String(i));
+  }
+
+  function setProfile(mm, syncCalc) {
+    profileMm = mm;
+    viewer?.profile(mm);
+    if (syncCalc) document.querySelector(`.calc-type[data-type="${mm}"]`)?.click();
+    if (mode === 'frame') getPlan(MODELS[current]).then(renderDetail);
+  }
+
+  function setMode(next) {
+    const m = MODELS[current];
+    mode = m.plan ? next : 'exterior';
+    setPressed('.model-mode', (b) => b.dataset.mode === mode);
+    viewer?.mode(mode);
+    getPlan(m).then(renderDetail);
+  }
 
   function status(text, image) {
     const box = $('modelStatus');
@@ -60,7 +208,9 @@ export function initModels() {
       for (const [label, value] of m.floors) {
         dl.append(Object.assign(document.createElement('dt'), { textContent: tt(label) }));
         dl.append(
-          Object.assign(document.createElement('dd'), { textContent: value.toFixed(1) + ' м²' }),
+          Object.assign(document.createElement('dd'), {
+            textContent: value.toFixed(1) + t(' м²', ' m²'),
+          }),
         );
       }
       const dt = Object.assign(document.createElement('dt'), {
@@ -68,7 +218,7 @@ export function initModels() {
         className: 'total',
       });
       const dd = Object.assign(document.createElement('dd'), {
-        textContent: area.toFixed(1) + ' м²',
+        textContent: area.toFixed(1) + t(' м²', ' m²'),
         className: 'total',
       });
       dl.append(dt, dd);
@@ -84,6 +234,12 @@ export function initModels() {
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', String(on));
     });
+    document.querySelectorAll('.model-mode').forEach((b) => {
+      b.disabled = !m.plan;
+    });
+    if (!m.plan) mode = 'exterior';
+    setPressed('.model-mode', (b) => b.dataset.mode === mode);
+    getPlan(m).then(renderDetail);
     if (viewer) show();
   }
 
@@ -102,9 +258,13 @@ export function initModels() {
       return;
     }
     status(t('3D загвар ачаалж байна…', 'Loading the 3D model…'));
-    viewer
-      .load(m.file)
-      .then(() => status(''))
+    getPlan(m)
+      .then((plan) => viewer.load(m.file, plan))
+      .then(() => {
+        status('');
+        viewer.profile(profileMm);
+        viewer.mode(mode);
+      })
       .catch(() =>
         status(
           t(
@@ -124,7 +284,7 @@ export function initModels() {
     }
     loading = import(/* @vite-ignore */ url)
       .then((mod) => {
-        viewer = mod.createViewer(stage);
+        viewer = mod.createViewer(stage, { onRoom: markRoom });
         document.querySelectorAll('.model-view').forEach((b) =>
           b.addEventListener('click', () => {
             document.querySelectorAll('.model-view').forEach((x) => {
@@ -152,6 +312,19 @@ export function initModels() {
       current = b.dataset.model;
       render();
       boot();
+    }),
+  );
+
+  document.querySelectorAll('.model-mode').forEach((b) =>
+    b.addEventListener('click', () => {
+      setMode(b.dataset.mode);
+      boot();
+    }),
+  );
+  document.querySelectorAll('.calc-type').forEach((b) =>
+    b.addEventListener('click', () => {
+      const mm = Number(b.dataset.type);
+      if (mm && mm !== profileMm) setProfile(mm, false);
     }),
   );
 

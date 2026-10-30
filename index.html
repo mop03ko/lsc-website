@@ -255,10 +255,16 @@
     <div class="section-header reveal">
       <div class="section-tag" data-en="3D models">3D загвар</div>
       <h2 class="section-title" data-en="Choose a model and explore it in 3D">Загвараа сонгоод <em>3D-ээр</em> үзээрэй</h2>
-      <p class="section-desc" data-en="Floor areas are measured from the 3D model. Send the area to the calculator for an indicative estimate.">Талбайг 3D загвараас хэмжсэн. Талбайг тооцоолуурт илгээж баримжаа үнээ шууд харна уу.</p>
+      <p class="section-desc" data-en="Floor areas are measured from the 3D model. Switch to a floor to see its room layout, or to the steel frame to see how it is built.">Талбайг 3D загвараас хэмжсэн. Давхраа сонгож өрөөний зохион байгуулалтыг, «Ган каркас»-аар хийцлэлийг нь харна уу.</p>
     </div>
     <div class="models-layout">
       <div class="model-stage" id="modelStage" role="img" aria-label="Сонгосон байшингийн 3D загвар. Чирж эргүүлнэ, гүйлгэж ойртуулна." data-en-label="3D model of the selected house. Drag to rotate, scroll to zoom." data-viewer="">
+        <div class="model-modes" role="group" aria-label="Харагдац" data-en-label="Display mode">
+          <button type="button" class="model-mode active" data-mode="exterior" aria-pressed="true" data-en="Exterior">Гадна төрх</button>
+          <button type="button" class="model-mode" data-mode="ground" aria-pressed="false" data-en="Floor 1 layout">1-р давхар</button>
+          <button type="button" class="model-mode" data-mode="upper" aria-pressed="false" data-en="Floor 2 layout">2-р давхар</button>
+          <button type="button" class="model-mode" data-mode="frame" aria-pressed="false" data-en="Steel frame">Ган каркас</button>
+        </div>
         <div class="model-status" id="modelStatus"><p id="modelStatusText" data-en="Preparing the 3D view…">3D загвар бэлдэж байна…</p></div>
         <div class="model-bar">
           <div class="model-views" role="group" aria-label="Харах өнцөг" data-en-label="View angle">
@@ -280,6 +286,7 @@
           <dt class="total" data-en="Total floor area">Нийт талбай</dt><dd class="total">220.4 м²</dd>
         </dl>
         <p class="model-help" data-en="Gross area measured to the outer walls. Usable area under the sloping roof may be smaller.">Гадна хананы хэмжээгээр хэмжсэн. Налуу дээврийн доорх ашигтай талбай бага байж болно.</p>
+        <div class="model-detail" id="modelDetail" aria-live="polite" hidden></div>
         <a href="#calculator" class="btn-primary btn-full" id="modelToCalc" data-en="Estimate this model">Энэ загварыг тооцоолох</a>
         <a href="#contact" class="text-link" id="modelToQuote" data-building="house" data-en="Request a quote for this model">Энэ загварт үнийн санал авах</a>
       </aside>
