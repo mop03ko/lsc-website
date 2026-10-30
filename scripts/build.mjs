@@ -26,6 +26,16 @@ const js = await build({
   legalComments: 'none',
 });
 const jsUrl = await asset('app', js.outputFiles[0].contents, 'js');
+const viewer = await build({
+  entryPoints: ['modules/viewer3d.js'],
+  bundle: true,
+  minify: true,
+  write: false,
+  format: 'esm',
+  target: ['es2022'],
+  legalComments: 'none',
+});
+const viewerUrl = await asset('viewer3d', viewer.outputFiles[0].contents, 'js');
 const css = await transform(await fs.readFile('style.css', 'utf8'), {
   loader: 'css',
   minify: true,
@@ -132,6 +142,7 @@ async function page(url, lang, body = null, title = null, description = null) {
   $('html').attr('lang', lang);
   $('head link[rel=stylesheet]').attr('href', cssUrl);
   $('script[type=module]').attr('src', jsUrl);
+  $('#modelStage').attr('data-viewer', viewerUrl);
   if (body) {
     $('nav a[href^="#"],footer a[href^="#"],#mobileMenu a[href^="#"]').each((_, el) =>
       $(el).attr('href', (lang === 'en' ? '/en/' : '/') + $(el).attr('href')),
@@ -242,7 +253,7 @@ await fs.writeFile(
   (await fs.readFile('deploy/apache.htaccess', 'utf8')).replaceAll('__SCHEMA_HASH__', schemaHash),
 );
 for (const name of ['send.php', 'events.php']) await fs.copyFile(name, path.join(out, name));
-for (const dir of ['server', 'config', 'vendor'])
+for (const dir of ['server', 'config', 'vendor', 'fonts', 'models'])
   await fs.cp(dir, path.join(out, dir), {
     recursive: true,
     filter: (src) => !src.includes(`${path.sep}.git`),
