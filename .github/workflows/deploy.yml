@@ -1,0 +1,88 @@
+name: Deploy (FTP)
+
+# Staging: every push to main or the redesign branch uploads dist/ to <FTP_BASE>new/
+# Production: only by hand (Actions → Deploy (FTP) → Run workflow → target=production,
+# confirm=lsc.mn), after the server environment in docs/DEPLOYMENT.md is in place.
+on:
+  push:
+    branches: [main, lsc-3.0-redesign]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Where to upload'
+        type: choice
+        options: [staging, production]
+        default: staging
+      confirm:
+        description: 'For production type: lsc.mn'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ftp-deploy-${{ github.event.inputs.target || 'staging' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, curl
+          tools: composer:v2
+      - run: npm ci
+      - run: composer install --no-interaction --prefer-dist --no-dev
+      - run: npm run verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.target == 'production' && 'production' || 'staging' }}
+    steps:
+      - name: Choose target folder
+        id: dir
+        env:
+          TARGET: ${{ github.event.inputs.target || 'staging' }}
+          CONFIRM: ${{ github.event.inputs.confirm }}
+          BASE: ${{ vars.FTP_BASE }}
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            if [ "$CONFIRM" != "lsc.mn" ]; then echo "::error::Production needs confirm=lsc.mn"; exit 1; fi
+            echo "path=${BASE:-./}" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=${BASE}new/" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Uploading to: ${BASE}$( [ "$TARGET" = production ] && echo '' || echo new/ )"
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist
+      - name: Upload over FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          port: ${{ vars.FTP_PORT || 21 }}
+          local-dir: ./dist/
+          server-dir: ${{ steps.dir.outputs.path }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+          log-level: standard

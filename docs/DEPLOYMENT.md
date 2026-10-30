@@ -6,6 +6,15 @@ Deploy the built `dist/` artifact to Apache 2.4 with PHP 8.3 or newer and PDO SQ
 
 The local audit found live Apache, not Netlify. No production deployment is automated in this repository because host credentials and the authoritative deployment path are not available. SSH to the existing host timed out during this work. GitHub push/CI and live deployment are separate operations.
 
+## Automated FTP upload (GitHub Actions)
+
+`.github/workflows/deploy.yml` builds and verifies the site, then uploads `dist/` over FTP using repository secrets `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
+
+- **Staging (automatic):** every push to `main` or `lsc-3.0-redesign` uploads to `<FTP_BASE>new/`, e.g. `https://lsc.mn/new/`.
+- **Production (manual only):** Actions → *Deploy (FTP)* → *Run workflow* → `target=production`, `confirm=lsc.mn`. Do this only after the server environment below is in place and the current document root is backed up.
+- Optional repository variables: `FTP_BASE` (default empty = the FTP account's home; use `public_html/` if the account starts above the web root), `FTP_PROTOCOL` (`ftps` default, `ftp` if the host has no TLS), `FTP_PORT` (21).
+- The action only uploads changed files and never removes files outside its own sync state; private lead data must live outside the web root (`LSC_DATA_DIR`).
+
 ## Prepare before switching traffic
 
 1. Back up the current document root and existing form integration configuration. Record its release/commit. Do not overwrite the only recoverable copy.
