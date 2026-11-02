@@ -21,7 +21,7 @@ Header always set X-Content-Type-Options "nosniff"
 Header always set X-Frame-Options "DENY"
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
 Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-__SCHEMA_HASH__'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-__SCHEMA_HASH__'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' blob:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 Header always set Strict-Transport-Security "max-age=31536000" "expr=%{HTTPS} == 'on'"
 <FilesMatch "\.[a-f0-9]{12}\.(js|css|webp|svg)$">
 Header set Cache-Control "public, max-age=31536000, immutable"
