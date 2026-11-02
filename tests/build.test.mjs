@@ -51,9 +51,17 @@ test('3D models section ships its viewer, model file and calculator link', async
     assert.match(viewer, /^\/assets\/viewer3d\.[a-f0-9]{12}\.js$/);
     await fs.access(path.join('dist', viewer));
     assert.equal($('.model-card').length, 7);
+    assert.equal($('.model-mode').length, 4);
+    assert.ok($('#modelDetail').length);
     assert.equal($('#modelToCalc').attr('href'), '#calculator');
     assert.ok($('#calculator #calcAreaInput').length);
   }
   await fs.access('dist/models/barnhouse-1.glb');
+  const plan = JSON.parse(await fs.readFile('dist/models/barnhouse-1.plan.json', 'utf8'));
+  assert.deepEqual(
+    plan.levels.map((l) => l.id),
+    ['ground', 'upper'],
+  );
+  assert.ok(plan.levels.every((l) => l.rooms.length > 0 && l.walls.length > 0));
   await fs.access('dist/fonts/IBMPlexSans-400Regular.woff2');
 });

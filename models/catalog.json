@@ -1,0 +1,104 @@
+[
+  {
+    "id": "a-frame",
+    "source": "A-FRAME.dae",
+    "sha256": "afccb4a1e610e26d74d852c0a27774bc09a8fab710d50ebbf2d9e38530e01630",
+    "file": "/models/a-frame.glb",
+    "bytes": 1148332,
+    "boundsMeters": [
+      7.55,
+      7.179,
+      15.28
+    ],
+    "meshes": 89,
+    "triangles": 3796,
+    "texturedMeshes": 85,
+    "repairedMaterialDefinitions": 32,
+    "missingUVPrimitives": 0
+  },
+  {
+    "id": "barndominium-1",
+    "source": "BARNDOMINIUM-1.dae",
+    "sha256": "47f2f760ea10357373d81032b83f270ab410a1653f5fabd19c61677f1bfd7752",
+    "file": "/models/barndominium-1.glb",
+    "bytes": 1494832,
+    "boundsMeters": [
+      21.24,
+      6.2,
+      15.75
+    ],
+    "meshes": 80,
+    "triangles": 3034,
+    "texturedMeshes": 29,
+    "repairedMaterialDefinitions": 3,
+    "missingUVPrimitives": 7
+  },
+  {
+    "id": "compact-cottage",
+    "source": "COMPACT-COTTAGE.dae",
+    "sha256": "de5bd73e823287993cdbf6e7b02149182ac53565541e68a33d3a4e6e5973358d",
+    "file": "/models/compact-cottage.glb",
+    "bytes": 894484,
+    "boundsMeters": [
+      9.22,
+      3.76,
+      6.5
+    ],
+    "meshes": 56,
+    "triangles": 2351,
+    "texturedMeshes": 6,
+    "repairedMaterialDefinitions": 1,
+    "missingUVPrimitives": 46
+  },
+  {
+    "id": "cottage-elevated",
+    "source": "COTTAGE-ELEVATED.dae",
+    "sha256": "1ad1ad55bff7e0b6221312aa84a11e5296a5661e3315ae14abe89c464bfcde59",
+    "file": "/models/cottage-elevated.glb",
+    "bytes": 9156156,
+    "boundsMeters": [
+      8.235,
+      9.36,
+      17.02
+    ],
+    "meshes": 692,
+    "triangles": 270518,
+    "texturedMeshes": 0,
+    "repairedMaterialDefinitions": 0,
+    "missingUVPrimitives": 0
+  },
+  {
+    "id": "japandi-contemporary",
+    "source": "JAPANDI-CONTEMPORARY.dae",
+    "sha256": "ebf59d696cfab9e3178a164417d5fe6a648a67f865c10008f9167a6ea1ab2b64",
+    "file": "/models/japandi-contemporary.glb",
+    "bytes": 16951620,
+    "boundsMeters": [
+      21.111,
+      4.25,
+      22.81
+    ],
+    "meshes": 263,
+    "triangles": 616831,
+    "texturedMeshes": 68,
+    "repairedMaterialDefinitions": 40,
+    "missingUVPrimitives": 132
+  },
+  {
+    "id": "modern-standart",
+    "source": "MODERN-STANDART.dae",
+    "sha256": "640638eaf7492bb4b63eff0124cdd000f0d2bb42b68054379c0dcb79a0058bf2",
+    "file": "/models/modern-standart.glb",
+    "bytes": 7952164,
+    "boundsMeters": [
+      12.057,
+      5.171,
+      16.215
+    ],
+    "meshes": 168,
+    "triangles": 240612,
+    "texturedMeshes": 111,
+    "repairedMaterialDefinitions": 3,
+    "missingUVPrimitives": 26
+  }
+]

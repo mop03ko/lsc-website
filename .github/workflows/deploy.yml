@@ -1,0 +1,131 @@
+name: Deploy (FTP)
+
+# Staging: every push to main or the redesign branch uploads dist/ to <FTP_BASE>new/
+# Production: only by hand (Actions → Deploy (FTP) → Run workflow → target=production,
+# confirm=lsc.mn), after the server environment in docs/DEPLOYMENT.md is in place.
+on:
+  push:
+    branches: [main, lsc-3.0-redesign]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Where to upload'
+        type: choice
+        options: [staging, production]
+        default: staging
+      confirm:
+        description: 'For production type: lsc.mn'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ftp-deploy-${{ github.event.inputs.target || 'staging' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, curl
+          tools: composer:v2
+      - run: npm ci
+      - run: composer install --no-interaction --prefer-dist --no-dev
+      - run: npm run verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.target == 'production' && 'production' || 'staging' }}
+    steps:
+      - name: Check FTP server name
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        run: |
+          case "$FTP_SERVER" in *://*|*/*|*" "*|"") echo "::error::FTP_SERVER must be a bare host name like cp-1.webhost.mn (no ftp://, slashes or spaces)"; exit 1;; esac
+          for h in cp-1.webhost.mn cp1.webhost.mn; do echo "::notice::$h resolves to: $(getent hosts $h | awk '{print $1}' | tr '\n' ' ')"; done
+          getent hosts "$FTP_SERVER" >/dev/null || { echo "::error::FTP_SERVER (length ${#FTP_SERVER}) does not resolve in DNS"; exit 1; }
+      - name: Choose target folder
+        id: dir
+        env:
+          TARGET: ${{ github.event.inputs.target || 'staging' }}
+          CONFIRM: ${{ github.event.inputs.confirm }}
+          BASE: ${{ vars.FTP_BASE }}
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            if [ "$CONFIRM" != "lsc.mn" ]; then echo "::error::Production needs confirm=lsc.mn"; exit 1; fi
+            echo "path=${BASE:-./}" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=${BASE}new/" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Uploading to: ${BASE}$( [ "$TARGET" = production ] && echo '' || echo new/ )"
+      - name: Back up the live site before replacing it (production only)
+        if: github.event.inputs.target == 'production'
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          PROTO: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          PORT: ${{ vars.FTP_PORT || 21 }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          DIR: ${{ steps.dir.outputs.path }}
+        run: |
+          fail() { echo "::error::$1: $(tail -n 3 err.txt 2>/dev/null | tr '\n' ' ')"; exit 1; }
+          (sudo apt-get -qq update && sudo apt-get -qq install -y lftp) >/dev/null 2>err.txt || fail "lftp install"
+          ssl=true; [ "$PROTO" = ftp ] && ssl=false
+          printf 'set ftp:ssl-force %s\nset ftp:ssl-protect-data %s\nset ssl:verify-certificate %s\nset net:max-retries 2\nset net:timeout 30\n' \
+            "$ssl" "$ssl" "${{ vars.FTP_VERIFY_CERT || 'yes' }}" > lftp.rc
+          lftp -p "$PORT" -u "$FTP_USERNAME" --env-password -e "source lftp.rc; cls -1 $DIR; bye" "$FTP_SERVER" > top.txt 2>err.txt || { names=$(echo | timeout 20 openssl s_client -starttls ftp -connect "$FTP_SERVER:$PORT" 2>/dev/null | openssl x509 -noout -subject -ext subjectAltName 2>/dev/null | tr '\n' ' '); echo "::warning::FTP certificate is issued for: $names"; fail "FTP list"; }
+          echo "::notice::Top level of $DIR: $(tr '\n' ' ' < top.txt | cut -c1-900)"
+          if grep -Eq '^public_html/?$' top.txt && ! grep -Eq '^index\.(html|php)$' top.txt; then
+            echo "::error::$DIR looks like the account home, not the web root. Set repository variable FTP_BASE=public_html/"; exit 1
+          fi
+          lftp -p "$PORT" -u "$FTP_USERNAME" --env-password -e "source lftp.rc; mirror --parallel=4 -x '^new/' $DIR backup; bye" "$FTP_SERVER" >/dev/null 2>err.txt || fail "FTP backup download"
+          files=$(find backup -type f | wc -l); echo "::notice::Backed up $files files ($(du -sh backup | cut -f1))"
+          [ "$files" -gt 0 ] || { echo "::error::Backup is empty"; exit 1; }
+          # Encrypted with the FTP password: the repository is public, so the archive must not be readable.
+          tar czf - -C backup . | gpg --batch --yes --pinentry-mode loopback --symmetric --cipher-algo AES256 \
+            --passphrase-file <(printf %s "$FTP_PASSWORD") -o lsc-live-backup.tar.gz.gpg
+          rm -rf backup lftp.rc
+      - name: Keep the encrypted backup (30 days)
+        if: github.event.inputs.target == 'production'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lsc-live-backup-${{ github.run_id }}
+          path: lsc-live-backup.tar.gz.gpg
+          retention-days: 30
+          if-no-files-found: error
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist
+      - name: Upload over FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          port: ${{ vars.FTP_PORT || 21 }}
+          local-dir: ./dist/
+          server-dir: ${{ steps.dir.outputs.path }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+          log-level: standard
