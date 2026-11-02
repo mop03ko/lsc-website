@@ -6,6 +6,24 @@ Deploy the built `dist/` artifact to Apache 2.4 with PHP 8.3 or newer and PDO SQ
 
 The local audit found live Apache, not Netlify. No production deployment is automated in this repository because host credentials and the authoritative deployment path are not available. SSH to the existing host timed out during this work. GitHub push/CI and live deployment are separate operations.
 
+## Automated FTP upload (GitHub Actions)
+
+`.github/workflows/deploy.yml` builds and verifies the site, then uploads `dist/` over FTP using repository secrets `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
+
+- **Staging (automatic):** every push to `main` or `lsc-3.0-redesign` uploads to `<FTP_BASE>new/`, e.g. `https://lsc.mn/new/`.
+- **Production (manual only):** Actions → *Deploy (FTP)* → *Run workflow* → `target=production`, `confirm=lsc.mn`. Do this only after the server environment below is in place and the current document root is backed up.
+- Production runs first download the live web root (except `new/`) and keep it as an encrypted 30-day artifact `lsc-live-backup-<run>` (AES-256, passphrase = the FTP password). Restore: `gpg -d lsc-live-backup.tar.gz.gpg | tar xz`. The run stops if the target folder looks like the account home instead of the web root.
+- Optional repository variables: `FTP_BASE` (default empty = the FTP account's home; use `public_html/` if the account starts above the web root), `FTP_PROTOCOL` (`ftps` default, `ftp` if the host has no TLS), `FTP_PORT` (21).
+- The action only uploads changed files and never removes files outside its own sync state; private lead data must live outside the web root (`LSC_DATA_DIR`).
+
+## cPanel quick setup (shared hosting)
+
+1. cPanel → MultiPHP Manager: set lsc.mn to PHP 8.3+; confirm pdo_sqlite, mbstring, curl.
+2. After the first staging upload, open cPanel → Terminal and run `php ~/public_html/new/server/install.php` (or the production path). It creates `~/lsc-private/` (0700) with `data/` and `env.php` (0600, random `LSC_IP_HASH_KEY`) and prints the cron command. Without Terminal, add the same command once as a cron job and remove it afterwards.
+3. Edit `~/lsc-private/env.php` in File Manager: SMTP (cPanel mail account, usually `mail.lsc.mn`, 465/ssl), `LSC_MAIL_TO`, `LSC_SHEET_URL`, `LSC_SHEET_SECRET`. Server environment variables, if set, override this file.
+4. cPanel → Cron Jobs: every minute, `php ~/public_html/server/worker.php` (use the printed PHP path).
+5. Test on staging, then run the production workflow.
+
 ## Prepare before switching traffic
 
 1. Back up the current document root and existing form integration configuration. Record its release/commit. Do not overwrite the only recoverable copy.
@@ -13,7 +31,7 @@ The local audit found live Apache, not Netlify. No production deployment is auto
 3. Create `LSC_DATA_DIR` outside every public document root, owned by the PHP/worker account (0700 directory, 0600 files; set service umask 0077). Place durable storage outside release directories so rollback does not remove leads. SQLite needs a local filesystem that supports locking; do not use a network share.
 4. Set the environment listed in `deploy/environment.example`. Generate independent random 32+ character secrets for the IP hash and Sheets signature. Share these environment values with the PHP service and CLI worker; do not publish them or commit an actual environment file.
 5. Set SMTP credentials for an authorized sender. Confirm SPF/DKIM/DMARC and delivery to the intended mailbox using the provider's own tools. SMTP acceptance alone does not prove inbox arrival. Recipients default only through your configuration; the API itself never sends mail synchronously.
-6. Deploy `integrations/apps-script.gs` to the intended Google account. Set `LSC_SECRET` and `LSC_SPREADSHEET_ID` in Script Properties, and copy its Web App URL to `LSC_SHEET_URL`. Use a restricted Sheet, audit sharing, and retire the previously public/unsigned receiver after the new integration is confirmed. Apps Script deployment/permissions are **not** changed by pushing this repository.
+6. Google Sheets: open the lead spreadsheet (columns Огноо, Нэр, Утас, Барилгын төрөл, Нэмэлт мэдээлэл), choose Extensions → Apps Script, paste `integrations/apps-script.gs`, run `setup()` once and authorize it. It stores a random `LSC_SECRET`, adds an `ID` header in column F and logs the secret. Deploy → New deployment → Web app (Execute as: Me, Who has access: Anyone). Put the Web App URL in `LSC_SHEET_URL` and the logged secret in `LSC_SHEET_SECRET` on the server. Rows are appended to the first tab (`LSC_SHEET_GID` script property selects another tab) with Ulaanbaatar time and the calculator summary in column E; column F (lead ID) prevents duplicates on retry. Retire any previous unsigned receiver after the first test row arrives. Pushing this repository does not change the Apps Script deployment.
 7. Run a staging request against test SMTP/Sheet destinations. Verify its `LSC-...` ID in SQLite, then in delivery logs and the Sheet. Retry the same request ID and confirm only one Sheet row.
 8. Schedule `php /path/to/release/server/worker.php` every minute under the configured account. It holds a process lock, retries failed channels and never marks an unacknowledged Sheet delivery as sent. SMTP retries are at-least-once; a stable Message-ID reduces duplicate presentation but does not promise exactly-once email.
 

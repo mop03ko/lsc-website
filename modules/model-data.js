@@ -1,9 +1,14 @@
-﻿/* Area: gross floor area measured from the 3D model (m²). file: served from /models/. */
+/* Area: gross floor area measured from the 3D model (m²). file: served from /models/. */
 export const MODELS = {
   barnhouse: {
     name: ['Барнхаус', 'Barnhouse'],
     note: ['2 давхар · гараж', '2 storeys · garage'],
     file: '/models/barnhouse-1.glb',
+    plan: '/models/barnhouse-1.plan.json',
+    levels: {
+      ground: ['1-р давхар', 'Ground floor'],
+      upper: ['2-р давхар', 'Upper floor'],
+    },
     dims: '11.4 × 14.4 м · 9.5 м',
     floors: [
       [['1-р давхар (гараж орсон)', 'Ground floor (incl. garage)'], 128.7],
@@ -43,5 +48,3 @@ export const MODELS = {
 };
 
 export const totalArea = (m) => (m.floors ? m.floors.reduce((s, f) => s + f[1], 0) : null);
-
-

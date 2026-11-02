@@ -260,6 +260,12 @@
     <div class="models-layout">
       <div class="model-stage" id="modelStage" role="group" aria-label="Сонгосон байшингийн 3D загвар. Чирж эргүүлнэ, гүйлгэж ойртуулна." data-en-label="3D model of the selected house. Drag to rotate, scroll to zoom." data-viewer="">
         <div class="model-status" id="modelStatus" role="status" aria-live="polite"><p id="modelStatusText" data-en="Preparing the 3D view…">3D загвар бэлдэж байна…</p><button type="button" id="modelRetry" class="model-view" data-en="Try again">Дахин оролдох</button></div>
+        <div class="model-modes" role="group" aria-label="Харагдац" data-en-label="Display mode">
+          <button type="button" class="model-mode active" data-mode="exterior" aria-pressed="true" data-en="Exterior">Гадна төрх</button>
+          <button type="button" class="model-mode" data-mode="ground" aria-pressed="false" data-en="Floor 1 layout">1-р давхар</button>
+          <button type="button" class="model-mode" data-mode="upper" aria-pressed="false" data-en="Floor 2 layout">2-р давхар</button>
+          <button type="button" class="model-mode" data-mode="frame" aria-pressed="false" data-en="Steel frame">Ган каркас</button>
+        </div>
         <div class="model-bar">
           <div class="model-views" role="group" aria-label="Харах өнцөг" data-en-label="View angle">
             <button type="button" class="model-view active" data-view="iso" aria-pressed="true">3D</button>
@@ -280,6 +286,7 @@
           <dt class="total" data-en="Total floor area">Нийт талбай</dt><dd class="total">220.4 м²</dd>
         </dl>
         <p class="model-help" data-en="Confirm floor area with project drawings. Dimensions and displayed materials are indicative.">Талбайг ажлын зургаар баталгаажуулна. Хэмжээс болон харагдах материал нь урьдчилсан мэдээлэл болно.</p>
+        <div class="model-detail" id="modelDetail" aria-live="polite" hidden></div>
         <a href="#calculator" class="btn-primary btn-full" id="modelToCalc" data-en="Estimate this model">Энэ загварыг тооцоолох</a>
         <a href="#contact" class="text-link" id="modelToQuote" data-building="house" data-en="Request a quote for this model">Энэ загварт үнийн санал авах</a><a id="modelDownload" class="text-link" href="/models/barnhouse-1.glb" download="" data-en="Download 3D model (GLB)">3D загвар татах (GLB)</a>
       </aside>
