@@ -491,3 +491,11 @@ body:has(.detail-page) #nav { background: var(--canvas); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+.catalog-tools { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-top:28px; }
+.catalog-tools input { padding:12px 16px; border:1px solid var(--border-strong); border-radius:var(--r-control); background:var(--surface); color:var(--ink); max-width:100%; }
+#modelCount { color:var(--muted); font-family:var(--font-mono); }
+.model-card { height:100%; }
+.mc-name { overflow-wrap:anywhere; }
+#modelRetry { margin-bottom:50px; }
+.model-stage canvas:focus-visible { outline:3px solid var(--action); outline-offset:-4px; }
+@media (max-width:600px) { .model-list { grid-template-columns:repeat(2,minmax(0,1fr)); } }

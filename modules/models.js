@@ -1,26 +1,6 @@
 import { t } from '../i18n.js';
 
-/* Area: gross floor area measured from the 3D model (m²). file: served from /models/. */
-export const MODELS = {
-  barnhouse: {
-    name: ['Барнхаус', 'Barnhouse'],
-    note: ['2 давхар · гараж', '2 storeys · garage'],
-    file: '/models/barnhouse-1.glb',
-    dims: '11.4 × 14.4 м · 9.5 м',
-    floors: [
-      [['1-р давхар (гараж орсон)', 'Ground floor (incl. garage)'], 128.7],
-      [['2-р давхар', 'Upper floor'], 91.7],
-    ],
-  },
-  m1: { name: ['Загвар 01', 'Model 01'], note: ['Тэгш дээвэр', 'Flat roof'] },
-  m2: { name: ['Загвар 02', 'Model 02'], note: ['Гаражтай', 'With garage'] },
-  m3: { name: ['Загвар 03', 'Model 03'], note: ['A-frame', 'A-frame'] },
-  m4: { name: ['Загвар 04', 'Model 04'], note: ['3 давхар', '3 storeys'] },
-  m5: { name: ['Загвар 05', 'Model 05'], note: ['Хосолсон дээвэр', 'Mixed roof'] },
-  m6: { name: ['Загвар 06', 'Model 06'], note: ['Нам, урт', 'Low and long'] },
-};
-
-export const totalArea = (m) => (m.floors ? m.floors.reduce((s, f) => s + f[1], 0) : null);
+import { MODELS, totalArea } from './model-data.js';
 
 export function initModels() {
   const stage = document.getElementById('modelStage');
@@ -29,11 +9,13 @@ export function initModels() {
   const tt = (pair) => t(pair[0], pair[1]);
   let current = 'barnhouse',
     viewer = null,
-    loading = null;
+    loading = null,
+    generatedMessage = '';
 
   function status(text, image) {
     const box = $('modelStatus');
     box.hidden = !text;
+    $('modelRetry').hidden = stage.getAttribute('aria-busy') === 'true';
     $('modelStatusText').textContent = text || '';
     let img = box.querySelector('img');
     if (image) {
@@ -52,6 +34,8 @@ export function initModels() {
     const m = MODELS[current],
       area = totalArea(m);
     $('modelName').textContent = tt(m.name);
+    $('modelDownload').href = m.file;
+    $('modelToCalc').hidden = !area;
     $('modelNote').textContent = tt(m.note);
     $('modelDims').textContent = m.dims || t('Концепт', 'Concept');
     const dl = $('modelAreas');
@@ -75,7 +59,7 @@ export function initModels() {
     } else {
       dl.append(Object.assign(document.createElement('dt'), { textContent: t('Талбай', 'Area') }));
       dl.append(
-        Object.assign(document.createElement('dd'), { textContent: t('Удахгүй', 'Coming soon') }),
+        Object.assign(document.createElement('dd'), { textContent: t('Зургаар батална', 'Confirm with drawings') }),
       );
     }
     $('modelToCalc').setAttribute('aria-disabled', String(!area));
@@ -88,7 +72,10 @@ export function initModels() {
   }
 
   function show() {
+    const selected = current;
     const m = MODELS[current];
+    stage.setAttribute('aria-busy', 'true');
+    delete stage.dataset.loaded;
     if (!m.file) {
       viewer.clear();
       const card = document.querySelector(`.model-card[data-model="${current}"] img`);
@@ -104,15 +91,22 @@ export function initModels() {
     status(t('3D загвар ачаалж байна…', 'Loading the 3D model…'));
     viewer
       .load(m.file)
-      .then(() => status(''))
-      .catch(() =>
+      .then((loaded) => {
+        if (loaded && selected === current) {
+          status('');
+          stage.setAttribute('aria-busy', 'false');
+        }
+      })
+      .catch((error) => {
+        if (selected !== current || error.name === 'AbortError') return;
+        stage.setAttribute('aria-busy', 'false');
         status(
           t(
             'Загвар ачаалагдсангүй. Хуудсаа дахин ачаална уу.',
-            'The model could not be loaded. Please reload the page.',
+            'The model could not be loaded. Select Try again.',
           ),
-        ),
-      );
+        );
+      });
   }
 
   function boot() {
@@ -125,9 +119,9 @@ export function initModels() {
     loading = import(/* @vite-ignore */ url)
       .then((mod) => {
         viewer = mod.createViewer(stage);
-        document.querySelectorAll('.model-view').forEach((b) =>
+        document.querySelectorAll('.model-view[data-view]').forEach((b) =>
           b.addEventListener('click', () => {
-            document.querySelectorAll('.model-view').forEach((x) => {
+            document.querySelectorAll('.model-view[data-view]').forEach((x) => {
               x.classList.toggle('active', x === b);
               x.setAttribute('aria-pressed', String(x === b));
             });
@@ -136,14 +130,15 @@ export function initModels() {
         );
         show();
       })
-      .catch(() =>
+      .catch(() => {
+        stage.setAttribute('aria-busy', 'false');
         status(
           t(
             '3D харагдац энэ төхөөрөмж дээр ачаалагдсангүй.',
             '3D view could not start on this device.',
           ),
-        ),
-      );
+        );
+      });
     return loading;
   }
 
@@ -167,8 +162,8 @@ export function initModels() {
       input.dispatchEvent(new Event('input', { bubbles: true }));
     }
     const msg = $('messageInput');
-    if (msg && !msg.value)
-      msg.value = t(
+    if (msg && (!msg.value || msg.value === generatedMessage))
+      msg.value = generatedMessage = t(
         `Загвар: ${tt(MODELS[current].name)} (${area.toFixed(0)} м²)`,
         `Model: ${tt(MODELS[current].name)} (${area.toFixed(0)} m²)`,
       );
@@ -177,12 +172,29 @@ export function initModels() {
     const msg = $('messageInput'),
       m = MODELS[current],
       area = totalArea(m);
-    if (msg && !msg.value)
-      msg.value =
+    if (msg && (!msg.value || msg.value === generatedMessage))
+      msg.value = generatedMessage =
         t(`Загвар: ${tt(m.name)}`, `Model: ${tt(m.name)}`) +
         (area ? ` (${area.toFixed(0)} м²)` : '');
   });
 
+  $('modelRetry')?.addEventListener('click', () => {
+    if (viewer) show();
+    else {
+      loading = null;
+      boot();
+    }
+  });
+  $('modelSearch')?.addEventListener('input', (e) => {
+    const query = e.target.value.trim().toLocaleLowerCase();
+    let count = 0;
+    document.querySelectorAll('.model-card').forEach((card) => {
+      const match = card.textContent.toLocaleLowerCase().includes(query);
+      card.closest('li').hidden = !match;
+      if (match) count++;
+    });
+    $('modelCount').textContent = `${count} / ${Object.keys(MODELS).length}`;
+  });
   render();
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(

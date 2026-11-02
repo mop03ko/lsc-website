@@ -17,6 +17,22 @@ export function createViewer(stage) {
   const renderer = new WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = SRGBColorSpace;
+  renderer.domElement.tabIndex = 0;
+  renderer.domElement.setAttribute('aria-label', stage.getAttribute('aria-label'));
+  renderer.domElement.addEventListener('keydown', (e) => {
+    const views = { ArrowLeft: 'side', ArrowRight: 'front', ArrowUp: 'top', Home: 'iso' };
+    if (views[e.key]) {
+      e.preventDefault();
+      view(views[e.key]);
+    }
+    if (e.key === '+' || e.key === '-') {
+      e.preventDefault();
+      camera.position
+        .sub(controls.target)
+        .multiplyScalar(e.key === '+' ? 0.85 : 1.15)
+        .add(controls.target);
+    }
+  });
   stage.prepend(renderer.domElement);
   const scene = new Scene();
   scene.add(new HemisphereLight(0xffffff, 0x8a8a80, 2.0));
@@ -34,16 +50,27 @@ export function createViewer(stage) {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   controls.maxPolarAngle = Math.PI * 0.495;
-  const loader = new GLTFLoader(),
-    cache = new Map();
+  const loader = new GLTFLoader();
+  let request = 0,
+    controller;
+  function dispose(obj) {
+    obj.traverse((o) => {
+      o.geometry?.dispose();
+      for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+        if (!m) continue;
+        for (const value of Object.values(m)) if (value?.isTexture) value.dispose();
+        m.dispose();
+      }
+    });
+  }
   let current = null,
     center = new Vector3(),
     radius = 10,
     visible = true,
     mode = 'iso';
   const resize = () => {
-    const w = stage.clientWidth,
-      h = stage.clientHeight;
+    const w = Math.max(1, stage.clientWidth),
+      h = Math.max(1, stage.clientHeight);
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -71,13 +98,17 @@ export function createViewer(stage) {
       .copy(center)
       .addScaledVector(
         new Vector3(...d).normalize(),
-        radius * 2.1 * Math.max(1, 1.2 / camera.aspect),
+        radius * 3.5 * Math.max(1, 1.2 / camera.aspect),
       );
     controls.target.copy(center);
     controls.update();
+    renderer.render(scene, camera);
   }
   function clear() {
-    if (current) scene.remove(current);
+    if (current) {
+      scene.remove(current);
+      dispose(current);
+    }
     current = null;
   }
   function place(obj) {
@@ -92,26 +123,28 @@ export function createViewer(stage) {
     center.set(0, center.y - box.min.y, 0);
     view();
   }
-  function load(url) {
-    if (cache.has(url)) {
-      place(cache.get(url));
-      return Promise.resolve();
+  async function load(url) {
+    const id = ++request;
+    controller?.abort();
+    controller = new AbortController();
+    clear();
+    const response = await fetch(url, { signal: controller.signal });
+    if (!response.ok) throw new Error('Model HTTP ' + response.status);
+    const data = await response.arrayBuffer();
+    if (id !== request) return false;
+    const gltf = await loader.parseAsync(data, '');
+    if (id !== request) {
+      dispose(gltf.scene);
+      return false;
     }
-    return new Promise((resolve, reject) =>
-      loader.load(
-        url,
-        (gltf) => {
-          gltf.scene.traverse((o) => {
-            if (o.isMesh) o.material.side = DoubleSide;
-          });
-          cache.set(url, gltf.scene);
-          place(gltf.scene);
-          resolve();
-        },
-        undefined,
-        reject,
-      ),
-    );
+    gltf.scene.traverse((o) => {
+      if (o.isMesh)
+        for (const m of Array.isArray(o.material) ? o.material : [o.material]) m.side = DoubleSide;
+    });
+    place(gltf.scene);
+    renderer.render(scene, camera);
+    stage.dataset.loaded = url;
+    return true;
   }
   return { load, view, clear };
 }
