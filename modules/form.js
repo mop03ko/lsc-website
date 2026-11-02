@@ -13,6 +13,13 @@ export function initForm() {
     busy = false;
   document.addEventListener('lsc:quote-selected', (e) => {
     quote = e.detail;
+    if (!quote) {
+      document.getElementById('quoteSummary').hidden = true;
+      document.getElementById('clearQuote').hidden = true;
+    }
+  });
+  document.getElementById('clearQuote')?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('lsc:quote-selected', { detail: null }));
   });
   function validatePhone() {
     const valid = normalizePhone(phone.value);
@@ -110,6 +117,7 @@ export function initForm() {
       quote = null;
       attempt = null;
       document.getElementById('quoteSummary').hidden = true;
+      document.getElementById('clearQuote').hidden = true;
       phone.setCustomValidity('');
       phone.removeAttribute('aria-invalid');
       hint.textContent = t(

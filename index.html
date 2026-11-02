@@ -57,7 +57,7 @@
       <span class="hero-title-line1">ХӨНГӨН ГАН КАРКАЗ</span>
       <span class="hero-title-line2">БАРИЛГЫН СИСТЕМ</span>
     </h1>
-    <p class="hero-sub">Хөнгөн хийц, Дэвшилтэт технологи</p>
+    <p class="hero-sub" data-en="Explore a design. Estimate your budget. Request a quotation tailored to your project.">Загвараа сонго. Төсвөө тооцоол. Төсөлдөө тохирсон үнийн санал ав.</p>
     <div class="hero-stats">
       <div class="stat"><span class="stat-num">CFS</span><span class="stat-lbl">Хурдан угсралт</span></div>
       <div class="stat-div"></div>
@@ -65,13 +65,54 @@
       <div class="stat-div"></div>
       <div class="stat"><span class="stat-num">20т</span><span class="stat-lbl">Өдрийн хүчин чадал</span></div>
     </div>
-    <div class="hero-actions">
-      <a href="#calculator" class="btn-primary">Үнэ тооцоолуулах</a>
-      <a href="#products" class="btn-outline">Бүтээгдэхүүн үзэх</a>
-    </div>
+    <div class="hero-actions"><a href="#models" class="btn-primary" data-en="Explore 3D models">3D загвар сонгох <span aria-hidden="true">↗</span></a><a href="#calculator" class="btn-outline" data-en="Estimate your budget">Төсвөө тооцоолох</a></div>
   </div>
   <div class="hero-scroll">
     <span></span>
+  </div>
+</section><section id="models">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag" data-en="3D models">3D загвар</div>
+      <h2 class="section-title" data-en="Choose a model and explore it in 3D">Загвараа сонгоод <em>3D-ээр</em> үзээрэй</h2>
+      <p class="section-desc" data-en="Choose a model, explore it from every angle and request a quote. Drag to rotate and scroll to zoom.">Загвараа сонгож эргүүлэн үзээд үнийн санал хүсээрэй. Чирж эргүүлэх, гүйлгэж ойртуулах боломжтой.</p>
+    </div>
+    <div class="catalog-tools"><label for="modelSearch" data-en="Find a model">Загвар хайх</label><input id="modelSearch" type="search" placeholder="A-Frame, Cottage…" aria-controls="modelList"><span id="modelCount" role="status" aria-live="polite">7 / 7</span></div><ul class="model-list" aria-label="Загварууд" data-en-label="Models" id="modelList"><li><button type="button" class="model-card active" data-model="barnhouse" aria-pressed="true"><img src="images/models/barnhouse.png" alt=""><span class="mc-name" data-en="Barnhouse">Барнхаус</span><span class="mc-note" data-en="Area · layout · frame">Талбай · план · карказ</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="a-frame" aria-pressed="false"><img src="images/models/a-frame.png" alt=""><span class="mc-name" data-en="A-Frame">A-Frame</span><span class="mc-note" data-en="Exterior model">Гадна төрхийн загвар</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="barndominium-1" aria-pressed="false"><img src="images/models/barndominium-1.png" alt=""><span class="mc-name" data-en="Barndominium 1">Barndominium 1</span><span class="mc-note" data-en="Exterior model">Гадна төрхийн загвар</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="compact-cottage" aria-pressed="false"><img src="images/models/compact-cottage.png" alt=""><span class="mc-name" data-en="Compact Cottage">Compact Cottage</span><span class="mc-note" data-en="Exterior model">Гадна төрхийн загвар</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="cottage-elevated" aria-pressed="false"><img src="images/models/cottage-elevated.png" alt=""><span class="mc-name" data-en="Cottage Elevated">Cottage Elevated</span><span class="mc-note" data-en="Exterior model">Гадна төрхийн загвар</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="japandi-contemporary" aria-pressed="false"><img src="images/models/japandi-contemporary.png" alt=""><span class="mc-name" data-en="Japandi Contemporary">Japandi Contemporary</span><span class="mc-note" data-en="Exterior model">Гадна төрхийн загвар</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="modern-standart" aria-pressed="false"><img src="images/models/modern-standart.png" alt=""><span class="mc-name" data-en="Modern Standard">Modern Standard</span><span class="mc-note" data-en="Exterior model">Гадна төрхийн загвар</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li></ul><div class="catalog-empty" id="modelEmpty" hidden=""><p data-en="No matching models. Try another name or show all models.">Тохирох загвар олдсонгүй. Өөр нэрээр хайх эсвэл бүх загварыг үзнэ үү.</p><button type="button" id="modelSearchReset" class="btn-outline" data-en="Show all models">Бүх загварыг үзэх</button></div><div class="models-layout">
+      <div class="model-viewport"><div class="model-modes" role="group" aria-label="Харагдац" data-en-label="Display mode">
+          <button type="button" class="model-mode active" data-mode="exterior" aria-pressed="true" data-en="Exterior">Гадна төрх</button>
+          <button type="button" class="model-mode" data-mode="ground" aria-pressed="false" data-en="Floor 1 layout">1-р давхар</button>
+          <button type="button" class="model-mode" data-mode="upper" aria-pressed="false" data-en="Floor 2 layout">2-р давхар</button>
+          <button type="button" class="model-mode" data-mode="frame" aria-pressed="false" data-en="Steel frame">Ган каркас</button>
+        </div><div class="model-stage" id="modelStage" role="group" aria-label="Сонгосон байшингийн 3D загвар. Чирж эргүүлнэ, гүйлгэж ойртуулна." data-en-label="3D model of the selected house. Drag to rotate, scroll to zoom." data-viewer="" aria-describedby="modelInteractionHelp">
+        <div class="model-status" id="modelStatus" role="status" aria-live="polite"><p id="modelStatusText" data-en="Preparing the 3D view…">3D загвар бэлдэж байна…</p><button type="button" id="modelRetry" class="model-view" data-en="Try again">Дахин оролдох</button></div>
+
+        <div class="model-bar">
+          <div class="model-views" role="group" aria-label="Харах өнцөг" data-en-label="View angle">
+            <button type="button" class="model-view active" data-view="iso" aria-pressed="true">3D</button>
+            <button type="button" class="model-view" data-view="front" aria-pressed="false" data-en="Front">Урд</button>
+            <button type="button" class="model-view" data-view="side" aria-pressed="false" data-en="Side">Хажуу</button>
+            <button type="button" class="model-view" data-view="top" aria-pressed="false" data-en="Top">Дээрээс</button>
+          </div>
+          <span class="model-dims" id="modelDims">11.4 × 14.4 м · 9.5 м</span>
+        </div>
+      </div><div class="viewer-tools" role="group" aria-label="3D удирдлага" data-en-label="3D controls"><button class="model-view" type="button" data-zoom="in" aria-label="Ойртуулах" data-en-label="Zoom in">+</button><button class="model-view" type="button" data-zoom="out" aria-label="Холдуулах" data-en-label="Zoom out">−</button><button class="model-view" type="button" id="modelReset" data-en="Reset view">Эхний харагдац</button></div><p id="modelInteractionHelp" class="model-help" data-en="Drag to rotate. Use + / − to zoom. Keyboard: arrow keys change the view; Home resets it.">Чирж эргүүлнэ. + / − товчоор ойртуулна. Гар: сумтай товчоор өнцөг солино, Home товчоор сэргээнэ.</p></div>
+      <aside class="model-panel" aria-labelledby="modelName">
+        <div class="calc-label" data-en="Selected model">Сонгосон загвар</div>
+        <h3 id="modelName" tabindex="-1">Барнхаус</h3>
+        <p class="model-note" id="modelNote">2 давхар · гараж</p><p class="model-availability" id="modelAvailability" role="status"></p>
+        <dl class="model-areas" id="modelAreas">
+          <dt data-en="Ground floor (incl. garage)">1-р давхар (гараж орсон)</dt><dd>128.7 м²</dd>
+          <dt data-en="Upper floor">2-р давхар</dt><dd>91.7 м²</dd>
+          <dt class="total" data-en="Total floor area">Нийт талбай</dt><dd class="total">220.4 м²</dd>
+        </dl>
+        <p class="model-help" data-en="Confirm floor area with project drawings. Dimensions and displayed materials are indicative.">Талбайг ажлын зургаар баталгаажуулна. Хэмжээс болон харагдах материал нь урьдчилсан мэдээлэл болно.</p>
+        <div class="model-detail" id="modelDetail" aria-live="polite" hidden=""></div>
+        <a href="#contact" class="btn-primary btn-full" id="modelToQuote" data-building="house" data-en="Request a quote for this model">Энэ загварт үнийн санал авах</a><a href="#calculator" class="btn-full btn-outline" id="modelToCalc" data-en="Estimate this model">Энэ загварыг тооцоолох</a>
+        <a id="modelDownload" class="text-link" href="/models/barnhouse-1.glb" download="" data-en="Download 3D model (GLB)">3D загвар татах (GLB)</a><button type="button" class="text-link model-share" id="modelShare" data-en="Copy link to this model">Загварын холбоос хуулах</button><span id="modelShareStatus" class="model-help" role="status"></span>
+      </aside>
+    </div>
+
+    <p class="model-disclaimer" data-en="Concept models, not completed projects. Colours are approximate. Final dimensions and prices are set by the project quotation.">Концепт загвар, дууссан төсөл биш. Өнгө ойролцоо. Эцсийн хэмжээ, үнийг төслийн үнийн саналаар тогтооно.</p>
   </div>
 </section><section id="about">
   <div class="container">
@@ -250,57 +291,13 @@
       </div>
     </div>
   </div>
-</section><section id="process"><div class="container"><div class="section-header"><div class="section-tag" data-en="How it works">Ажлын дараалал</div><h2 class="section-title" data-en="From your idea to a clear plan">Санаанаас тодорхой төлөвлөгөө рүү</h2></div><ol class="process-grid"><li><strong data-en="01 · Tell us about your project">01 · Төслөө танилцуулах</strong><p data-en="Share the intended use, area, location and drawings if available.">Зориулалт, талбай, байршил болон боломжтой бол ажлын зургаа танилцуулна.</p></li><li><strong data-en="02 · Confirm scope and specifications">02 · Шийдэл, хүрээг тохирох</strong><p data-en="Discuss engineering requirements, materials, included work and delivery.">Инженерийн шаардлага, материал, гүйцэтгэх ажил, нийлүүлэлтийг тохирно.</p></li><li><strong data-en="03 · Receive a project quotation">03 · Үнийн санал авах</strong><p data-en="Confirm the price, schedule and payment terms in the final quotation.">Эцсийн үнийн саналд үнэ, хугацаа, төлбөрийн нөхцөлөө баталгаажуулна.</p></li></ol></div></section><section id="models">
-  <div class="container">
-    <div class="section-header reveal">
-      <div class="section-tag" data-en="3D models">3D загвар</div>
-      <h2 class="section-title" data-en="Choose a model and explore it in 3D">Загвараа сонгоод <em>3D-ээр</em> үзээрэй</h2>
-      <p class="section-desc" data-en="Choose a model, explore it from every angle and request a quote. Drag to rotate and scroll to zoom.">Загвараа сонгож эргүүлэн үзээд үнийн санал хүсээрэй. Чирж эргүүлэх, гүйлгэж ойртуулах боломжтой.</p>
-    </div>
-    <div class="models-layout">
-      <div class="model-stage" id="modelStage" role="group" aria-label="Сонгосон байшингийн 3D загвар. Чирж эргүүлнэ, гүйлгэж ойртуулна." data-en-label="3D model of the selected house. Drag to rotate, scroll to zoom." data-viewer="">
-        <div class="model-status" id="modelStatus" role="status" aria-live="polite"><p id="modelStatusText" data-en="Preparing the 3D view…">3D загвар бэлдэж байна…</p><button type="button" id="modelRetry" class="model-view" data-en="Try again">Дахин оролдох</button></div>
-        <div class="model-modes" role="group" aria-label="Харагдац" data-en-label="Display mode">
-          <button type="button" class="model-mode active" data-mode="exterior" aria-pressed="true" data-en="Exterior">Гадна төрх</button>
-          <button type="button" class="model-mode" data-mode="ground" aria-pressed="false" data-en="Floor 1 layout">1-р давхар</button>
-          <button type="button" class="model-mode" data-mode="upper" aria-pressed="false" data-en="Floor 2 layout">2-р давхар</button>
-          <button type="button" class="model-mode" data-mode="frame" aria-pressed="false" data-en="Steel frame">Ган каркас</button>
-        </div>
-        <div class="model-bar">
-          <div class="model-views" role="group" aria-label="Харах өнцөг" data-en-label="View angle">
-            <button type="button" class="model-view active" data-view="iso" aria-pressed="true">3D</button>
-            <button type="button" class="model-view" data-view="front" aria-pressed="false" data-en="Front">Урд</button>
-            <button type="button" class="model-view" data-view="side" aria-pressed="false" data-en="Side">Хажуу</button>
-            <button type="button" class="model-view" data-view="top" aria-pressed="false" data-en="Top">Дээрээс</button>
-          </div>
-          <span class="model-dims" id="modelDims">11.4 × 14.4 м · 9.5 м</span>
-        </div>
-      </div>
-      <aside class="model-panel" aria-labelledby="modelName">
-        <div class="calc-label" data-en="Selected model">Сонгосон загвар</div>
-        <h3 id="modelName">Барнхаус</h3>
-        <p class="model-note" id="modelNote">2 давхар · гараж</p>
-        <dl class="model-areas" id="modelAreas">
-          <dt data-en="Ground floor (incl. garage)">1-р давхар (гараж орсон)</dt><dd>128.7 м²</dd>
-          <dt data-en="Upper floor">2-р давхар</dt><dd>91.7 м²</dd>
-          <dt class="total" data-en="Total floor area">Нийт талбай</dt><dd class="total">220.4 м²</dd>
-        </dl>
-        <p class="model-help" data-en="Confirm floor area with project drawings. Dimensions and displayed materials are indicative.">Талбайг ажлын зургаар баталгаажуулна. Хэмжээс болон харагдах материал нь урьдчилсан мэдээлэл болно.</p>
-        <div class="model-detail" id="modelDetail" aria-live="polite" hidden></div>
-        <a href="#calculator" class="btn-primary btn-full" id="modelToCalc" data-en="Estimate this model">Энэ загварыг тооцоолох</a>
-        <a href="#contact" class="text-link" id="modelToQuote" data-building="house" data-en="Request a quote for this model">Энэ загварт үнийн санал авах</a><a id="modelDownload" class="text-link" href="/models/barnhouse-1.glb" download="" data-en="Download 3D model (GLB)">3D загвар татах (GLB)</a>
-      </aside>
-    </div>
-    <div class="catalog-tools"><label for="modelSearch" data-en="Find a model">Загвар хайх</label><input id="modelSearch" type="search" placeholder="A-Frame, Cottage…" aria-controls="modelList"><span id="modelCount" role="status">7 / 7</span></div><ul class="model-list" aria-label="Загварууд" data-en-label="Models" id="modelList"><li><button type="button" class="model-card active" data-model="barnhouse" aria-pressed="true"><img src="images/models/barnhouse.png" alt=""><span class="mc-name" data-en="Barnhouse">Барнхаус</span><span class="mc-note" data-en="2 storeys · garage">2 давхар · гараж</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="a-frame" aria-pressed="false"><img src="images/models/a-frame.png" alt=""><span class="mc-name" data-en="A-Frame">A-Frame</span><span class="mc-note" data-en="3D catalog">3D каталог</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="barndominium-1" aria-pressed="false"><img src="images/models/barndominium-1.png" alt=""><span class="mc-name" data-en="Barndominium 1">Barndominium 1</span><span class="mc-note" data-en="3D catalog">3D каталог</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="compact-cottage" aria-pressed="false"><img src="images/models/compact-cottage.png" alt=""><span class="mc-name" data-en="Compact Cottage">Compact Cottage</span><span class="mc-note" data-en="3D catalog">3D каталог</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="cottage-elevated" aria-pressed="false"><img src="images/models/cottage-elevated.png" alt=""><span class="mc-name" data-en="Cottage Elevated">Cottage Elevated</span><span class="mc-note" data-en="3D catalog">3D каталог</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="japandi-contemporary" aria-pressed="false"><img src="images/models/japandi-contemporary.png" alt=""><span class="mc-name" data-en="Japandi Contemporary">Japandi Contemporary</span><span class="mc-note" data-en="3D catalog">3D каталог</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li><li><button type="button" class="model-card" data-model="modern-standart" aria-pressed="false"><img src="images/models/modern-standart.png" alt=""><span class="mc-name" data-en="Modern Standard">Modern Standard</span><span class="mc-note" data-en="3D catalog">3D каталог</span><span class="mc-state" data-en="3D ready">3D бэлэн</span></button></li></ul>
-    <p class="model-disclaimer" data-en="Concept models, not completed projects. Colours are approximate. Final dimensions and prices are set by the project quotation.">Концепт загвар, дууссан төсөл биш. Өнгө ойролцоо. Эцсийн хэмжээ, үнийг төслийн үнийн саналаар тогтооно.</p>
-  </div>
-</section><section id="calculator">
+</section><section id="process"><div class="container"><div class="section-header"><div class="section-tag" data-en="How it works">Ажлын дараалал</div><h2 class="section-title" data-en="From your idea to a clear plan">Санаанаас тодорхой төлөвлөгөө рүү</h2></div><ol class="process-grid"><li><strong data-en="01 · Tell us about your project">01 · Төслөө танилцуулах</strong><p data-en="Share the intended use, area, location and drawings if available.">Зориулалт, талбай, байршил болон боломжтой бол ажлын зургаа танилцуулна.</p></li><li><strong data-en="02 · Confirm scope and specifications">02 · Шийдэл, хүрээг тохирох</strong><p data-en="Discuss engineering requirements, materials, included work and delivery.">Инженерийн шаардлага, материал, гүйцэтгэх ажил, нийлүүлэлтийг тохирно.</p></li><li><strong data-en="03 · Receive a project quotation">03 · Үнийн санал авах</strong><p data-en="Confirm the price, schedule and payment terms in the final quotation.">Эцсийн үнийн саналд үнэ, хугацаа, төлбөрийн нөхцөлөө баталгаажуулна.</p></li></ol></div></section><section id="calculator">
   <div class="container">
     <div class="section-header reveal">
       <div class="section-tag">Үнэ тооцоолох</div>
       <h2 class="section-title">Карказны <em>тооцоолуур</em></h2>
       <p class="section-desc on-light">Барих гэж буй барилгынхаа талбайг (м²) оруулах буюу гүйлгүүрээр сонгоход төсөв шууд тооцоологдоно.</p>
-    <p class="section-desc" data-en="Rates shown are estimates. Both profile options currently use the same indicative rate; final specifications and prices are confirmed by quotation.">Хоёр профилийн сонголтод одоогоор ижил баримжаа тариф хэрэглэж байна. Материалын үзүүлэлт, эцсийн үнийг үнийн саналаар баталгаажуулна.</p></div>
+    <p class="estimate-note" data-en="Rates shown are estimates. Both profile options currently use the same indicative rate; final specifications and prices are confirmed by quotation.">Хоёр профилийн сонголтод одоогоор ижил баримжаа тариф хэрэглэж байна. Материалын үзүүлэлт, эцсийн үнийг үнийн саналаар баталгаажуулна.</p></div>
     <div class="calc-card reveal">
       <div class="calc-left">
         <div class="calc-label">Профилийн төрөл</div>
@@ -316,11 +313,11 @@
         </div>
         <div class="calc-label">Барилгын талбай</div>
         <div class="calc-area">
-          <input type="number" id="calcAreaInput" min="10" max="400" value="80" inputmode="numeric" aria-label="Барилгын талбай, м²" data-en-label="Building area, square metres" aria-describedby="calcError" step="1"><small id="calcError" class="field-error" aria-live="polite"></small>
+          <input type="number" id="calcAreaInput" min="10" max="400" value="80" inputmode="numeric" aria-label="Барилгын талбай, м²" data-en-label="Building area, square metres" aria-describedby="calcError calcAreaHelp" step="1"><small id="calcError" class="field-error" aria-live="polite"></small>
           <span class="calc-area-unit">м²</span>
-        </div>
+        </div><div class="area-presets" role="group" aria-label="Талбайн жишээ" data-en-label="Area presets"><button type="button" data-area="40">40 м²</button><button type="button" data-area="80">80 м²</button><button type="button" data-area="120">120 м²</button><button type="button" data-area="200">200 м²</button></div>
         <input type="range" id="calcSlider" min="10" max="400" step="1" value="80" aria-label="Талбай сонгох" data-en-label="Building area">
-        <div class="calc-range-labels"><span>10 м²</span><span>400 м²</span></div>
+        <div class="calc-range-labels"><span>10 м²</span><span>400 м²</span></div><p id="calcAreaHelp" class="model-help" data-en="Enter 10–400 m². This estimates the frame and listed work, not a finished building.">10–400 м² оруулна. Энэ нь карказ болон жагсаасан ажлын тооцоо; иж бүрэн барилгын үнэ биш.</p>
         <div class="calc-unit"><span data-en="Frame material / m²">Карказны материал / м²</span> <strong id="calcUnitPrice">₮220,000</strong><br><span data-en="Including listed work / m²">Дээрх ажлуудтай / м²</span> <strong id="calcAllUnit">₮273,000</strong></div>
       </div>
       <div class="calc-right">
@@ -530,7 +527,7 @@
       </div>
       <div class="contact-right reveal reveal-delay">
         <form class="contact-form" id="contactForm" method="post" action="/send.php">
-          <h3>Үнэ тооцоолуулах</h3><p id="quoteSummary" class="quote-summary" hidden=""></p>
+          <h3>Үнэ тооцоолуулах</h3><p id="quoteSummary" class="quote-summary" hidden=""></p><button type="button" class="text-link" id="clearQuote" hidden="" data-en="Remove this estimate">Тооцооллыг хүсэлтээс хасах</button>
           <div class="form-group">
             <label for="nameInput">Нэр</label>
             <input type="text" name="name" placeholder="Таны нэр" required="" id="nameInput" maxlength="100" autocomplete="name">

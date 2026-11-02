@@ -7,7 +7,8 @@ export function initModels() {
   if (!stage) return;
   const $ = (id) => document.getElementById(id);
   const tt = (pair) => t(pair[0], pair[1]);
-  let current = 'barnhouse',
+  const requestedModel = new URL(location.href).searchParams.get('model');
+  let current = Object.hasOwn(MODELS, requestedModel) ? requestedModel : 'barnhouse',
     viewer = null,
     loading = null,
     generatedMessage = '',
@@ -152,7 +153,9 @@ export function initModels() {
     mode = m.plan ? next : 'exterior';
     setPressed('.model-mode', (b) => b.dataset.mode === mode);
     viewer?.mode(mode);
-    getPlan(m).then(plan => { if (MODELS[current] === m) renderDetail(plan); });
+    getPlan(m).then((plan) => {
+      if (MODELS[current] === m) renderDetail(plan);
+    });
   }
 
   function status(text, image) {
@@ -180,6 +183,15 @@ export function initModels() {
     $('modelDownload').href = m.file;
     $('modelToCalc').hidden = !area;
     $('modelNote').textContent = tt(m.note);
+    $('modelAvailability').textContent = m.plan
+      ? t(
+          'Талбай, давхрын план, бүдүүвч карказ үзэх боломжтой.',
+          'Area, floor layouts and a schematic frame are available.',
+        )
+      : t(
+          'Одоогоор гадна төрхийн 3D загвар. Баталгаатай м², давхрын план, карказын зураг дараа нэмэгдэнэ.',
+          'Exterior 3D model available. Confirmed floor area, layouts and structural drawings will be added later.',
+        );
     $('modelDims').textContent = m.dims || t('Концепт', 'Concept');
     const dl = $('modelAreas');
     dl.replaceChildren();
@@ -218,9 +230,12 @@ export function initModels() {
     document.querySelectorAll('.model-mode').forEach((b) => {
       b.disabled = !m.plan;
     });
+    document.querySelector('.model-modes').hidden = !m.plan;
     if (!m.plan) mode = 'exterior';
     setPressed('.model-mode', (b) => b.dataset.mode === mode);
-    getPlan(m).then(plan => { if (MODELS[current] === m) renderDetail(plan); });
+    getPlan(m).then((plan) => {
+      if (MODELS[current] === m) renderDetail(plan);
+    });
     if (viewer) show();
   }
 
@@ -299,9 +314,17 @@ export function initModels() {
 
   document.querySelectorAll('.model-card').forEach((b) =>
     b.addEventListener('click', () => {
+      if (current === b.dataset.model && viewer) {
+        $('modelStage').scrollIntoView({ block: 'center' });
+        return;
+      }
       current = b.dataset.model;
+      const url = new URL(location.href);
+      url.searchParams.set('model', current);
+      history.replaceState(null, '', url);
       render();
       boot();
+      $('modelStage').scrollIntoView({ block: 'center' });
     }),
   );
 
@@ -337,6 +360,7 @@ export function initModels() {
       );
   });
   $('modelToQuote').addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('lsc:quote-selected', { detail: null }));
     const msg = $('messageInput'),
       m = MODELS[current],
       area = totalArea(m);
@@ -361,7 +385,34 @@ export function initModels() {
       card.closest('li').hidden = !match;
       if (match) count++;
     });
-    $('modelCount').textContent = `${count} / ${Object.keys(MODELS).length}`;
+    $('modelCount').textContent = t(`${count} загвар`, `${count} models`);
+    $('modelEmpty').hidden = count !== 0;
+  });
+  $('modelSearchReset').addEventListener('click', () => {
+    $('modelSearch').value = '';
+    $('modelSearch').dispatchEvent(new Event('input'));
+    $('modelSearch').focus();
+  });
+  document
+    .querySelectorAll('[data-zoom]')
+    .forEach((b) =>
+      b.addEventListener('click', () => viewer?.zoom(b.dataset.zoom === 'in' ? 0.8 : 1.25)),
+    );
+  $('modelReset').addEventListener('click', () => {
+    viewer?.view('iso');
+    setPressed('.model-view[data-view]', (b) => b.dataset.view === 'iso');
+  });
+  $('modelShare').addEventListener('click', async () => {
+    const url = new URL(location.href);
+    url.searchParams.set('model', current);
+    url.hash = 'models';
+    try {
+      await navigator.clipboard.writeText(url.href);
+      $('modelShareStatus').textContent = t('Холбоос хууллаа.', 'Link copied.');
+    } catch {
+      const link = el('a', { href: url.href, textContent: url.href });
+      $('modelShareStatus').replaceChildren(link);
+    }
   });
   render();
   if ('IntersectionObserver' in window) {

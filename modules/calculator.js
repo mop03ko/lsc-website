@@ -97,6 +97,12 @@ export function initCalculator() {
     render();
     track('calculator_use');
   });
+  document.querySelectorAll('[data-area]').forEach((button) =>
+    button.addEventListener('click', () => {
+      input.value = button.dataset.area;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }),
+  );
   document.querySelectorAll('.calc-type').forEach((b) =>
     b.addEventListener('click', () => {
       state.profile = b.dataset.type;
@@ -142,6 +148,7 @@ export function initCalculator() {
     }
     const result = calculate(config, state);
     $('quoteSummary').hidden = false;
+    $('clearQuote').hidden = false;
     $('quoteSummary').textContent =
       t(
         `Таны сонголт: ${state.profile}мм · ${state.area} м² · ${money(result.total)}. Төлбөр: `,

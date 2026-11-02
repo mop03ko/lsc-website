@@ -381,5 +381,12 @@ export function createViewer(stage, { onRoom } = {}) {
     stage.dataset.loaded = url;
     return true;
   }
-  return { load, view, clear, mode: setMode, profile, selectRoom };
+  function zoom(factor) {
+    const offset = camera.position.clone().sub(controls.target);
+    const distance = Math.max(radius * 0.3, Math.min(radius * 12, offset.length() * factor));
+    camera.position.copy(controls.target).add(offset.setLength(distance));
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  return { load, view, zoom, clear, mode: setMode, profile, selectRoom };
 }
