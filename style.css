@@ -154,7 +154,7 @@ section { padding: 96px 0; border-bottom: 1px solid var(--border); }
 /* ═══ HERO ═══ */
 #hero { padding: 0; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); max-width: 1280px; margin: 0 auto; gap: 56px; padding: 64px 32px 88px; align-items: center; }
 .hero-bg { position: relative; order: 2; }
-.hero-img { width: 100%; aspect-ratio: 5 / 4; object-fit: cover; border-radius: var(--r-panel); }
+.hero-img { width: 100%; aspect-ratio: 5 / 4; object-fit: cover; object-position: center bottom; border-radius: var(--r-panel); }
 .hero-overlay { display: none; }
 .hero-content { order: 1; }
 .hero-badge { display: inline-flex; align-items: center; gap: 12px; font: 500 12px/1.5 var(--font-mono); letter-spacing: .10em; text-transform: uppercase; color: var(--muted); }
